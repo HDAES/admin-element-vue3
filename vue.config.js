@@ -1,5 +1,5 @@
 'use strict'
-
+const webpack = require('webpack')
 const path = require('path')
 module.exports = {
     publicPath: './',
@@ -19,7 +19,10 @@ module.exports = {
             }
         },
         plugins: [
-           
+            new webpack.DefinePlugin({
+                __VUE_OPTIONS_API__: JSON.stringify(true),
+                __INTLIFY_PROD_DEVTOOLS__ : 'false'
+            })
         ]
     },
     
