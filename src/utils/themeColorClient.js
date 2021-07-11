@@ -1,0 +1,29 @@
+import client from 'webpack-theme-color-replacer/client'
+import forElementUI from 'webpack-theme-color-replacer/forElementUI'
+import appConfig from '@/config/appConfig'
+export let curColor = appConfig.themeColor
+ 
+// 动态切换主题色
+export function changeThemeColor(newColor) {
+  const options = {
+      newColors: [
+          ...forElementUI.getElementUISeries(newColor),
+      ],
+  };
+  return client.changer.changeColor(options, Promise).then((t) => {
+      curColor = newColor;
+      localStorage.setItem('theme_color', curColor);
+  });
+}
+
+
+export function initThemeColor() {
+  const savedColor = localStorage.getItem('theme_color');
+  if (savedColor) {
+      document.body.style.display = 'none'
+      curColor = savedColor;
+      changeThemeColor(savedColor).finally(() => {
+          document.body.style.display = ''
+      });
+  }
+}
