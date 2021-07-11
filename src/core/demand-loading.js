@@ -3,6 +3,7 @@
  * @Author: Hades
  * @Date: 2021-07-02 22:50:01
  */
+
 import {
     ElAlert,
     ElAside,
@@ -187,7 +188,6 @@ import {
       plugins.forEach(plugin => {
           app.use(plugin)
       })
-
       app.config.globalProperties.$ELEMENT = { size: 'small', zIndex: 3000 }
     }
 }

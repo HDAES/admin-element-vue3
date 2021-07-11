@@ -1,0 +1,32 @@
+<template>
+    <el-dropdown>
+        <span class="el-icon-basketball">
+            
+        </span>
+        <template #dropdown>
+            <el-dropdown-menu>
+                <el-dropdown-item @click="change('zh')">简体中文</el-dropdown-item>
+                <el-dropdown-item @click="change('en')">English</el-dropdown-item>
+            </el-dropdown-menu>
+        </template>
+    </el-dropdown>
+</template>
+
+<script>
+import { loadLanguageAsync } from '@/locales'
+import { ElMessage } from 'element-plus';
+import { useI18n } from 'vue-i18n/index'
+export default {
+    setup(){
+        const { t } = useI18n() 
+        const change = (lang) =>{
+            loadLanguageAsync(lang).then(res =>{
+                ElMessage.success(t('message.lang'))
+            })
+        }
+        return {
+            change
+        }
+    }
+}
+</script>
