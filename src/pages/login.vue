@@ -24,9 +24,12 @@
 <script>
 import { reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useCounterStore } from '@/store/modules/counter'
 export default {
   setup(){
     const { t } = useI18n()
+    const counterStore = useCounterStore()
+    
     const checked = ref(false)
     const loading = ref(loading)
     const ruleForm = ref()
@@ -36,14 +39,15 @@ export default {
     })
 
     const submitForm = () =>{
-      ruleForm.value.validate((valid) => {
-        if (valid) {
-          alert('submit!');
-        } else {
-          console.log('error submit!!');
-          return false;
-        }
-      })
+      counterStore.increment()
+      // ruleForm.value.validate((valid) => {
+      //   if (valid) {
+      //     alert('submit!');
+      //   } else {
+      //     console.log('error submit!!');
+      //     return false;
+      //   }
+      // })
     }
     return {
       checked,
