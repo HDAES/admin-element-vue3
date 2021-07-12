@@ -1,3 +1,11 @@
 @import 'element_base.scss';
 
+.form-item-sb{
+    .el-form-item__content{
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
 

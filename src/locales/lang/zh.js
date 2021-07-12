@@ -1,10 +1,9 @@
 module.exports = {
-    header_menu: {
+    login_page:{
         login: '登录',
-        register: '注册',
-        logout: '退出登录',
-    },
-    message:{
-        lang: '切换为中文'
+        user_placeholder: '请输入用户名',
+        pass_word_placeholder: '请输入密码',
+        remember: '记住密码',
+        forget: '忘记密码？'
     }
 }
