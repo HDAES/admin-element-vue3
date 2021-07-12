@@ -13,9 +13,16 @@ const routes = [
         ]
     },
     {
-        path: "/home",
-        name: "home",
-        component: () => import('@/pages/home')
+        path: "",
+        component: layout,
+        redirect: 'home',
+        children:[
+            {
+                path: 'home',
+                component: () => import('@/pages/home')
+            }
+        ]
+        
     },{
         path: "/login",
         name: "Login",
