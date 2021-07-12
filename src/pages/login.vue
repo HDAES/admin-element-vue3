@@ -3,11 +3,11 @@
     <div class="login-box">
       <div class="title">{{$t('login_page.login')}}</div>
       <el-form class="login-form" :model="form" ref="ruleForm" :rules="rules" >
-        <el-form-item prop="accout">
-          <el-input v-model="form.accout"  prefix-icon="el-icon-user" :placeholder="$t('login_page.user_placeholder')"/>
+        <el-form-item prop="name">
+          <el-input v-model="form.name"  prefix-icon="el-icon-user" :placeholder="$t('login_page.user_placeholder')"/>
         </el-form-item>
-        <el-form-item prop="passWord">
-          <el-input v-model="form.passWord" type="password" prefix-icon="el-icon-lock" autocomplete="off" :placeholder="$t('login_page.pass_word_placeholder')"/>
+        <el-form-item prop="password">
+          <el-input v-model="form.password" type="password" prefix-icon="el-icon-lock" autocomplete="off" :placeholder="$t('login_page.pass_word_placeholder')"/>
         </el-form-item>
         <el-form-item class="form-item-sb">
           <el-checkbox v-model="checked">{{$t('login_page.remember')}}</el-checkbox>
@@ -23,31 +23,29 @@
 
 <script>
 import { reactive, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
-import { useCounterStore } from '@/store/modules/counter'
+import { useI18n } from 'vue-i18n/index'
+import { useUserStore } from '@/store/modules/user'
 export default {
   setup(){
     const { t } = useI18n()
-    const counterStore = useCounterStore()
+    const userStore = useUserStore()
     
     const checked = ref(false)
     const loading = ref(loading)
     const ruleForm = ref()
     const form = reactive({
-      accout: '',
-      passWord: ''
+      name: '',
+      password: ''
     })
 
     const submitForm = () =>{
-      counterStore.increment()
-      // ruleForm.value.validate((valid) => {
-      //   if (valid) {
-      //     alert('submit!');
-      //   } else {
-      //     console.log('error submit!!');
-      //     return false;
-      //   }
-      // })
+      ruleForm.value.validate((valid) => {
+        if (valid) {
+          userStore.login(form)
+        } else {
+          return false;
+        }
+      })
     }
     return {
       checked,
@@ -56,10 +54,10 @@ export default {
       ruleForm,
       submitForm,
       rules:reactive({
-        accout: [
+        name: [
           { required: true, message: t('login_page.user_placeholder'), trigger: 'blur' },
         ],
-        passWord: [
+        password: [
           { required: true, message: t('login_page.pass_word_placeholder'), trigger: 'blur' },
         ],
       })

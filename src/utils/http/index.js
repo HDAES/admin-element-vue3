@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { getToken } from '@/utils/auth'
+import { ElMessage } from 'element-plus'
 axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8'
 
 // 创建axios实例
@@ -18,11 +19,36 @@ service.interceptors.request.use(config => {
     }
     return config
 }, error => {
-    console.log(error)
     Promise.reject(error)
 })
 
 // 响应拦截器
 service.interceptors.response.use(response =>{
-    
+    const code = response.data.error || 0;
+
+    if(code == 0){
+        return response.data
+    }else if(code == 1){
+        ElMessage.error(response.data.message || '未知错误')
+        return Promise.reject(new Error(response.data.message))
+    }
+},error => {
+    let { message } = error;
+    if (message == "Network Error") {
+        message = "后端接口连接异常"; 
+    }else if(message.includes("timeout")){
+        message = "系统接口请求超时";
+    }else if(message.includes("Request failed with status code")){
+        message = "系统接口" + message.substr(message.length - 3) + "异常";
+    }
+
+    ElMessage({
+        type: 'error',
+        message,
+        duration: 5000
+    })
+
+    return Promise.reject(error)
 })
+
+export default service
