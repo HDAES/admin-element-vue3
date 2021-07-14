@@ -88,6 +88,7 @@ import {
     ElMessage,
     ElMessageBox,
     ElNotification,
+    ElSpace
   } from 'element-plus';
   
   const components = [
@@ -169,6 +170,7 @@ import {
     ElTransfer,
     ElTree,
     ElUpload,
+    ElSpace
   ]
   
   const plugins = [

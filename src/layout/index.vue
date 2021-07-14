@@ -2,7 +2,7 @@
   <el-container style="height:100%">
     <SideBar/>
     <el-container>
-      <el-header style="text-align: right; font-size: 12px;line-height:60px"><Header/></el-header>
+      <el-header style="background-color: #242f42"><Header/></el-header>
       <AppMain />
     </el-container>
   </el-container>

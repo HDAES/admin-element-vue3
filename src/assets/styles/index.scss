@@ -9,3 +9,9 @@
     }
 }
 
+.el-menu{
+    border-right: none!important;
+}
+.sidebar-el-menu:not(.el-menu--collapse) {
+    width: 250px;
+}

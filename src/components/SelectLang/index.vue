@@ -1,8 +1,6 @@
 <template>
     <el-dropdown>
-        <span class="el-icon-basketball">
-            
-        </span>
+        <TranslationOutlined style="color:#fff;font-size:24px"/>
         <template #dropdown>
             <el-dropdown-menu>
                 <el-dropdown-item @click="change('zh')">简体中文</el-dropdown-item>
@@ -16,7 +14,9 @@
 import { loadLanguageAsync } from '@/locales'
 import { ElMessage } from 'element-plus';
 import { useI18n } from 'vue-i18n/index'
+import { TranslationOutlined } from '@ant-design/icons-vue'
 export default {
+    components: { TranslationOutlined },
     setup(){
         const { t } = useI18n() 
         const change = (lang) =>{
