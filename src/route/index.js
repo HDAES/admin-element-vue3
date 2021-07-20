@@ -28,11 +28,11 @@ const routes = [
         name: "Login",
         component: () => import('@/pages/login')
     },
-    { 
-        path: '/:pathMatch(.*)*', 
-        name: 'NotFound', 
-        component: ()=>import('@/pages/notFound') 
-    },
+    // { 
+    //     path: '/:pathMatch(.*)*', 
+    //     name: 'NotFound', 
+    //     component: ()=>import('@/pages/notFound') 
+    // },
 ]
 
 

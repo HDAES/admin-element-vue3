@@ -6,12 +6,16 @@ export const useUserStore = defineStore({
   id: 'user',
   state: () =>({
     token: getToken(),
+    roles: [],
+    permissions: []
   }),
   actions: {
     setToken(token) {
       this.token = token
     },
-    
+    setRoles(roles) {
+      this.roles = roles
+    },
     async login(data){
       return new Promise((resolve, reject) =>{
         postLogin({...data,password:sha1(data.password)}).then(res =>{
@@ -20,6 +24,13 @@ export const useUserStore = defineStore({
         }).catch(error => {
           reject(error)
         })
+      })
+    },
+
+    GetInfo(){
+      return new Promise((resolve, reject) => {
+        this.setRoles(['admin'])
+        resolve(true)
       })
     },
 
@@ -32,5 +43,6 @@ export const useUserStore = defineStore({
         reject(error)
       })
     }
+
   }
 })
