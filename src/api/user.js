@@ -9,3 +9,10 @@ export function postLogin(data) {
       data
     })
   }
+  export function getPermissionTree() {
+    return request({
+      url: '/admin/sec/permission/tree',
+      method: 'get'
+    })
+  }
+ 
