@@ -9,10 +9,18 @@ export function postLogin(data) {
       data
     })
   }
-  export function getPermissionTree() {
-    return request({
-      url: '/admin/sec/permission/tree',
-      method: 'get'
-    })
-  }
+
+export function getPermissionTree() {
+  return request({
+    url: '/admin/sec/permission/tree',
+    method: 'get'
+  })
+}
  
+export function getUserList(params) {
+  return request({
+    url: '/api/manage/user/list',
+    method: 'get',
+    params
+  })
+}

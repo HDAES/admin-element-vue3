@@ -25,7 +25,7 @@
                         </el-dropdown>
                     </div>
                 </el-tooltip>
-                <el-popover placement="bottom-start" :width="400" trigger="click">
+                <el-popover placement="bottom-start" :width="100" trigger="click">
                     <template #reference>
                          <i class="el-icon-setting" style="font-size:20px"/>
                     </template>
@@ -36,12 +36,9 @@
                             @select="handleSelectionChange" 
                             :data="columns" >
                             <el-table-column type="selection" width="40"></el-table-column>
-                            <el-table-column prop="name" label="列展示"></el-table-column>
+                            <el-table-column prop="title" label="列展示"></el-table-column>
                         </el-table>
-                       
-
-                    </div>
-                    
+                    </div> 
                 </el-popover>
             </el-space>
         </div>
@@ -49,7 +46,8 @@
     <el-table 
         v-bind="tableConfig"
         :data="tableData"
-        v-loading="loading">
+        v-loading="loading"
+        header-row-class-name="hades-table-header">
         <!-- 多选框 -->
         <el-table-column v-if="tableConfig.selection"  type="selection" width="55" align="center"></el-table-column>
         <!-- 序号列 -->
@@ -59,7 +57,7 @@
             <el-table-column
                 v-if="!item.hide"
                 :key="index"
-                :label="item.name"
+                :label="item.title"
                 :prop="item.dataIndex"
                 :sortable="item.sortable || false" 
                 :align="item.align || 'left'"
@@ -75,19 +73,25 @@
                 </el-table-column>
         </template>
     </el-table>
+
+    <!-- 分页 -->
+    <el-pagination 
+        style="margin-top:20px"
+        :background="true"
+        :total="pagination.total" 
+        layout="total,->, sizes, prev, pager, next, jumper"
+        v-model:currentPage="pagination.currentPage" 
+        v-model:pageSize="pagination.pageSize"/>
   </div>
 </template>
 
 <script>
-import { onMounted, reactive, ref } from 'vue'
+import { onMounted, reactive, ref, watchEffect } from 'vue'
+
 import { ColumnHeightOutlined } from '@ant-design/icons-vue'
 export default {
     components: { ColumnHeightOutlined },
     props:{
-        tableData: {
-            type: Array,
-            default: () => []
-        },
         loading: {
             type: Boolean,
             default: false
@@ -100,7 +104,7 @@ export default {
                     selection: false,
                     index: false,
                     stripe: true,
-                    border: true,
+                    border: false,
                     size: 'small',
                     showHeader: true
                 }
@@ -109,6 +113,9 @@ export default {
         columns: {
             type: Array,
             default: () => []
+        },
+        getData: {
+            type: Function
         }
     },
     setup(props){
@@ -116,10 +123,38 @@ export default {
         const tableConfig = reactive(props.tableConfig)
         const columns = reactive(props.columns)
         const loading = ref(props.loading)
+        const refresh = ref(false)
+        const tableData = ref([])
+
+        const params = reactive({
+            page: 1,
+            size: 10
+        })
+        const pagination = reactive({
+            total: 0,
+            currentPage: 1,
+            pageSize: 10
+        })
         const multipleTable = ref(null)
         const checkList = ref([])
 
+        watchEffect(() =>{
+            loading.value = true
+            refresh.value 
+            props.getData({
+                page: pagination.currentPage,
+                size: pagination.pageSize
+            }).then(res =>{
+                pagination.total = res.data.total
+                pagination.currentPage = res.data.pageNum
+                pagination.pageSize = res.data.pageSize
+                tableData.value = res.data.list
+                loading.value = false
+            })
 
+        })
+
+    
         onMounted(() =>{
             columns.forEach(item =>{
                 if(!item.hide){
@@ -135,9 +170,9 @@ export default {
         const handleChangeStripe = () =>{
             tableConfig.stripe = !tableConfig.stripe
         }
-        //刷新
+        //刷新列表
         const handleRefresh = () =>{
-
+           refresh.value = !refresh.value
         }
         const handleCommand = (command) =>{
             tableConfig.size = command
@@ -164,7 +199,9 @@ export default {
             checkList,
             tableConfig,
             columns,
-            loading
+            loading,
+            pagination,
+            tableData
         }
     }
 };
