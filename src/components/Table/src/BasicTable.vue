@@ -1,10 +1,29 @@
 <template>
   <div class="table" ref="wrapRef">
 
+    <div v-if="searchForm.length >0">
+        <el-row gutter="20">
+            <el-col v-for="item in searchForm" :key="item.name" :span="3" >
+                <el-input v-if="item.type == 'IS'" v-model="formData[item.file]" :placeholder="item.placeholder" >
+                    <template #append>
+                        <el-button icon="el-icon-search" @click="handleSearch"></el-button>
+                    </template>
+                </el-input>
+            </el-col>
+        </el-row>
+    </div>
+
+
     <div class="header">
-        <div class="table-name">{{tableConfig.tableName}}</div>
+        <div class="table-name">
+            {{tableConfig.tableName}}
+            <el-tooltip class="item" effect="dark" :content="tableConfig.subName" placement="top-start">
+                <i class="el-icon-warning-outline"/>
+            </el-tooltip>
+        </div>
         <div class="">
             <el-space direction="horizontal"  :size="10">
+                <el-button type="primary" v-if="!addBtnShow" @click="$emit('update:addVisible', true)">新增</el-button>
                 <el-button type="primary" @click="handleChangeborder">{{tableConfig.border?'隐藏边框':'显示边框'}}</el-button>
                 <el-button type="primary" @click="handleOpenLoading">开启loading</el-button>
                 <el-button type="primary" @click="handleChangeStripe">{{tableConfig.stripe?'隐藏斑马纹':'显示斑马纹'}}</el-button>
@@ -33,6 +52,7 @@
                     <div class="setting">
                         <el-table
                             ref="multipleTable"
+                            @selectAll="handleSelectionChange"
                             @select="handleSelectionChange" 
                             :data="columns" >
                             <el-table-column type="selection" width="40"></el-table-column>
@@ -97,18 +117,11 @@ export default {
             default: false
         },
         tableConfig: {
-            type: Object,
-            default: () => {
-                return {
-                    tableName: '默认名字',
-                    selection: false,
-                    index: false,
-                    stripe: true,
-                    border: false,
-                    size: 'small',
-                    showHeader: true
-                }
-            }
+            type: Object
+        },
+        searchForm: {
+            type: Array,
+            default: []
         },
         columns: {
             type: Array,
@@ -116,20 +129,30 @@ export default {
         },
         getData: {
             type: Function
+        },
+        addVisible: {
+            type: Boolean,
+            default: true
         }
     },
     setup(props){
-
-        const tableConfig = reactive(props.tableConfig)
+        const defaultConfig = {
+            tableName: '默认名字',
+            subName: '默认名字',
+            selection: false,
+            index: false,
+            stripe: true,
+            border: false,
+            size: 'small',
+            showHeader: true
+        }
+        const tableConfig = reactive({...defaultConfig,...props.tableConfig} )
         const columns = reactive(props.columns)
         const loading = ref(props.loading)
         const refresh = ref(false)
+        const addBtnShow = ref(props.addVisible)
         const tableData = ref([])
-
-        const params = reactive({
-            page: 1,
-            size: 10
-        })
+        const formData = reactive({})
         const pagination = reactive({
             total: 0,
             currentPage: 1,
@@ -143,7 +166,7 @@ export default {
             refresh.value 
             props.getData({
                 page: pagination.currentPage,
-                size: pagination.pageSize
+                size: pagination.pageSize,
             }).then(res =>{
                 pagination.total = res.data.total
                 pagination.currentPage = res.data.pageNum
@@ -151,18 +174,36 @@ export default {
                 tableData.value = res.data.list
                 loading.value = false
             })
-
         })
+        
+       
 
-    
         onMounted(() =>{
             columns.forEach(item =>{
                 if(!item.hide){
                     multipleTable.value.toggleRowSelection(item)
                 }
             })
-
+            //设置搜索参数
+            props.searchForm.forEach(item =>{
+               formData[item.file] = null
+            })
         })
+
+        //搜索
+        const handleSearch = () => {
+            props.getData({
+                page: pagination.currentPage,
+                size: pagination.pageSize,
+                ...formData
+            }).then(res =>{
+                pagination.total = res.data.total
+                pagination.currentPage = res.data.pageNum
+                pagination.pageSize = res.data.pageSize
+                tableData.value = res.data.list
+                loading.value = false
+            })
+        }
 
         const handleChangeborder = () =>{
             tableConfig.border = !tableConfig.border
@@ -201,7 +242,10 @@ export default {
             columns,
             loading,
             pagination,
-            tableData
+            tableData,
+            addBtnShow,
+            formData,
+            handleSearch
         }
     }
 };
