@@ -2,7 +2,7 @@
   <div class="table" ref="wrapRef">
 
     <div v-if="searchForm.length >0">
-        <el-row gutter="20">
+        <el-row :gutter="20">
             <el-col v-for="item in searchForm" :key="item.name" :span="3" >
                 <el-input v-if="item.type == 'IS'" v-model="formData[item.file]" :placeholder="item.placeholder" >
                     <template #append>
@@ -11,6 +11,24 @@
                 </el-input>
             </el-col>
         </el-row>
+        <el-form :inline="true" style="margin-top:10px">
+            <template v-for="item in searchForm" :key="item.name"> 
+                <el-form-item :label="item.label" v-if="item.type == 'FS'">
+                    <el-select v-model="formData[item.file]" >
+                        <el-option 
+                            v-for="(itm,idx) in item.options"
+                            :key="idx"
+                            :label="itm.label"
+                            :value="itm.value"
+                            />
+                    </el-select>
+                </el-form-item>
+            </template>
+            <el-form-item>
+                <el-button type="primary" icon="el-icon-search" size="mini" @click="handleSearch">搜索</el-button>
+                <el-button  size="mini" icon="el-icon-refresh" :loading="loading" @click="handleReset">重置</el-button>
+            </el-form-item>
+        </el-form>
     </div>
 
 
@@ -153,6 +171,7 @@ export default {
         const addBtnShow = ref(props.addVisible)
         const tableData = ref([])
         const formData = reactive({})
+        const tempFormData = reactive({})
         const pagination = reactive({
             total: 0,
             currentPage: 1,
@@ -167,6 +186,7 @@ export default {
             props.getData({
                 page: pagination.currentPage,
                 size: pagination.pageSize,
+                ...tempFormData
             }).then(res =>{
                 pagination.total = res.data.total
                 pagination.currentPage = res.data.pageNum
@@ -175,9 +195,6 @@ export default {
                 loading.value = false
             })
         })
-        
-       
-
         onMounted(() =>{
             columns.forEach(item =>{
                 if(!item.hide){
@@ -192,19 +209,19 @@ export default {
 
         //搜索
         const handleSearch = () => {
-            props.getData({
-                page: pagination.currentPage,
-                size: pagination.pageSize,
-                ...formData
-            }).then(res =>{
-                pagination.total = res.data.total
-                pagination.currentPage = res.data.pageNum
-                pagination.pageSize = res.data.pageSize
-                tableData.value = res.data.list
-                loading.value = false
-            })
+            for(let key in formData){
+                tempFormData[key] = formData[key]
+            }
         }
-
+        //重置搜索条件
+        const handleReset = () =>{
+            props.searchForm.forEach(item =>{
+               formData[item.file] = null
+               tempFormData[item.file] = null
+            })
+            pagination.currentPage = 1
+            pagination.pageSize = 10
+        }
         const handleChangeborder = () =>{
             tableConfig.border = !tableConfig.border
         }
@@ -245,7 +262,8 @@ export default {
             tableData,
             addBtnShow,
             formData,
-            handleSearch
+            handleSearch,
+            handleReset
         }
     }
 };

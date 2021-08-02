@@ -80,6 +80,27 @@ export default {
         type: 'IS',
         file: 'key',
         placeholder: "清单名"
+      },{
+        type: 'FS',
+        file: 'vipType',
+        label: '会员类型',
+        placeholder: "请输入会员类型",
+        options:[{
+          value: '',
+          label: '全部'
+        },{
+          value: '1',
+          label: '包月会员'
+        },{
+          value: '2',
+          label: '包季会员'
+        },{
+          value: '3',
+          label: '包年会员'
+        },{
+          value: '4',
+          label: '永久会员'
+        }]
       }]
     }
   }
