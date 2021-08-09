@@ -3,14 +3,18 @@
     <div class="login-box">
       <div class="title">{{$t('login_page.login')}}</div>
       <el-form class="login-form" :model="form" ref="ruleForm" :rules="rules" >
-        <el-form-item prop="name">
-          <el-input v-model="form.name"  prefix-icon="el-icon-user" :placeholder="$t('login_page.user_placeholder')"/>
+        <el-form-item prop="username">
+          <el-input v-model="form.username"  prefix-icon="el-icon-user" :placeholder="$t('login_page.user_placeholder')"/>
         </el-form-item>
         <el-form-item prop="password">
           <el-input v-model="form.password" type="password" prefix-icon="el-icon-lock" autocomplete="off" :placeholder="$t('login_page.pass_word_placeholder')"/>
         </el-form-item>
+        <el-form-item prop="code" class="code-item">
+          <el-input v-model="form.code"  prefix-icon="el-icon-key" autocomplete="off" :placeholder="$t('login_page.verify_placeholder')"/>
+          <img style="width:100px;margin-left:20px" :src="verifyImageBase64" alt="code" @click="getVerify">
+        </el-form-item>
         <el-form-item class="form-item-sb">
-          <el-checkbox v-model="checked">{{$t('login_page.remember')}}</el-checkbox>
+          <el-checkbox v-model="form.rememberMe">{{$t('login_page.remember')}}</el-checkbox>
           <el-link type="primary">{{$t('login_page.forget')}}</el-link>
         </el-form-item>
         <el-form-item>
@@ -22,44 +26,70 @@
 </template>
 
 <script>
-import { reactive, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n/index'
 import { useUserStore } from '@/store/modules/user'
+import { useRouter } from 'vue-router'
+import { getVerifyCode } from "@/api/system/login"
 export default {
   setup(){
     const { t } = useI18n()
     const userStore = useUserStore()
-    
-    const checked = ref(false)
+    const router = useRouter()
     const loading = ref(loading)
+    const verifyImageBase64 = ref('')
     const ruleForm = ref()
     const form = reactive({
-      name: '',
-      password: ''
+      username: 'admin',
+      password: '123456',
+      code: '',
+      verify: '',
+      rememberMe: true
     })
+
+
+    onMounted( () =>getVerify())
 
     const submitForm = () =>{
       ruleForm.value.validate((valid) => {
         if (valid) {
-          userStore.login(form)
+          userStore.login(form).then(res =>{
+            console.log('12323')
+            router.push({ path:"/system/user" })
+          }).catch(error  =>{
+            getVerifyCode()
+            form.code = ''
+          })
         } else {
           return false;
         }
       })
     }
+
+    const getVerify = () =>{
+      getVerifyCode().then(res =>{
+        form.verify = res.verify
+        verifyImageBase64.value = 'data:image/jpg;base64,' + res.imageBase64
+      })
+    }
+
     return {
-      checked,
       loading,
       form,
       ruleForm,
+      verifyImageBase64,
       submitForm,
+      getVerify,
       rules:reactive({
-        name: [
+        username: [
           { required: true, message: t('login_page.user_placeholder'), trigger: 'blur' },
         ],
         password: [
           { required: true, message: t('login_page.pass_word_placeholder'), trigger: 'blur' },
         ],
+        code: [
+          { required: true, message: t('login_page.verify_placeholder'), trigger: 'blur' },
+        ]
       })
     }
   }

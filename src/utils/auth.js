@@ -13,3 +13,4 @@ export function setToken(token){
 export function removeToken(){
     return storage.remove(TokenKey)
 }
+

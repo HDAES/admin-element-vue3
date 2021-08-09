@@ -8,6 +8,15 @@
         align-items: center;
     }
 }
+.code-item{
+    .el-form-item__content{
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center; 
+    }
+}
+
 
 .el-menu{
     border-right: none!important;

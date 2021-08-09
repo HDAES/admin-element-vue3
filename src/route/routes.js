@@ -15,7 +15,7 @@ export const routes = [{
         name: 'User',
         component: "system/user/index",
         meta: {
-            title: '用户管理',
+            title: '角色管理',
             icon: 'el-icon-phone',
             noCache: false, 
             link: null

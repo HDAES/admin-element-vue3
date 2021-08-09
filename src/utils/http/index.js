@@ -1,6 +1,9 @@
 import axios from 'axios'
 import { getToken } from '@/utils/auth'
 import { ElMessage } from 'element-plus'
+import { setSign } from './sign'
+
+import { useUserStore } from '@/store/modules/user'
 axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8'
 
 // 创建axios实例
@@ -12,11 +15,18 @@ const service = axios.create({
 })
 // request拦截器
 service.interceptors.request.use(config => {
-     // 是否需要设置 token
+
+    const timestamp = new Date().getTime()
+
+    // 是否需要设置 token
     const isToken = (config.headers || {}).isToken === false
     if (getToken() && !isToken) {
-        config.headers['awesome'] =  getToken() // 让每个请求携带自定义token 请根据实际情况自行修改
+        config.headers['Authorization'] =  getToken() // 让每个请求携带自定义token 请根据实际情况自行修改
     }
+
+    config.headers['version'] = '1.0.0'
+    config.headers['timestamp'] = timestamp
+    config.headers['sign'] = setSign(config,timestamp)
     return config
 }, error => {
     Promise.reject(error)
@@ -24,13 +34,22 @@ service.interceptors.request.use(config => {
 
 // 响应拦截器
 service.interceptors.response.use(response =>{
-    const code = response.data.error || 0;
+    const code = response.data.code;
 
-    if(code == 0){
-        return response.data
-    }else if(code == 1){
+    if(code == 200){
+        return response.data.data
+    }else if(code == 201 || code == 403){
         ElMessage.error(response.data.message || '未知错误')
         return Promise.reject(new Error(response.data.message))
+    }else if(code == 4014){
+        ElMessage.error(response.data.message || '未知错误')
+        return Promise.reject(new Error(response.data.message))
+    }else if(code == 401){
+        ElMessage.error(response.data.message || '未知错误')
+
+        // useUserStore().loginOut().then(res =>{
+        //     location.href = '/login';
+        // })
     }
 },error => {
     let { message } = error;
