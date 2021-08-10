@@ -103,7 +103,7 @@
                 :formatter="item.formatter"
                 >
                     <template v-if="!item.formatter" #default="scope">
-                        <slot v-if="item.slotname" :name="item.slotname" :soltval="scope.row" />
+                        <slot v-if="item.slotname" :name="item.slotname" :row="scope.row" />
                         <span v-else>
                             {{ scope.row[item.dataIndex] }}
                         </span>
@@ -156,7 +156,7 @@ export default {
     setup(props){
         const defaultConfig = {
             tableName: '默认名字',
-            subName: '默认名字',
+            subName: '',
             selection: false,
             index: false,
             stripe: true,
@@ -188,10 +188,10 @@ export default {
                 size: pagination.pageSize,
                 ...tempFormData
             }).then(res =>{
-                pagination.total = res.data.total
-                pagination.currentPage = res.data.pageNum
-                pagination.pageSize = res.data.pageSize
-                tableData.value = res.data.list
+                pagination.total = res.total
+                pagination.currentPage = res.page
+                pagination.pageSize = res.size
+                tableData.value = res.list
                 loading.value = false
             })
         })

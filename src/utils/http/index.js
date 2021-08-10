@@ -37,7 +37,13 @@ service.interceptors.response.use(response =>{
     const code = response.data.code;
 
     if(code == 200){
-        return response.data.data
+        if(response.data.data){
+            return response.data.data
+        }else{
+            ElMessage.success(response.data.message || '操作成功')
+            return response.data
+        }
+        
     }else if(code == 201 || code == 403){
         ElMessage.error(response.data.message || '未知错误')
         return Promise.reject(new Error(response.data.message))
@@ -50,6 +56,9 @@ service.interceptors.response.use(response =>{
         // useUserStore().loginOut().then(res =>{
         //     location.href = '/login';
         // })
+    }else if(code == 404){
+        ElMessage.error(response.data.message || '未知错误')
+        return Promise.reject(new Error(response.data.message))
     }
 },error => {
     let { message } = error;
