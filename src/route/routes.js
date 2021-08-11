@@ -11,11 +11,21 @@ export const routes = [{
         link: null
     },
     children:[{
+        path: 'role',
+        name: 'Role',
+        component: "system/role/index",
+        meta: {
+            title: '角色管理',
+            icon: 'el-icon-phone',
+            noCache: false, 
+            link: null
+        },
+    },{
         path: 'user',
         name: 'User',
         component: "system/user/index",
         meta: {
-            title: '角色管理',
+            title: '管理员列表',
             icon: 'el-icon-phone',
             noCache: false, 
             link: null

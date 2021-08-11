@@ -1,7 +1,6 @@
 import Md5 from 'md5'
 
 export function setSign(config, timestamp){
-    console.log(config.method)
     var str = ""
     if((config.method == "get" || config.method == "delete") && config.params){
         var keys = Object.keys(config.params).sort();

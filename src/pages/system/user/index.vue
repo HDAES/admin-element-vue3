@@ -5,18 +5,23 @@
       v-model:addVisible="dialogVisible"
       :tableConfig="tableConfig"
       :columns="columns" 
-      :getData="getRoleList"> 
+      :getData="getUserList"> 
       <template  #operate="scope" >
-          <el-button type="text" @click="handleDel(scope.row.id)">删除</el-button>
+        <el-button type="text" @click="handleDel(scope.row)">删除</el-button>
+        <el-button type="text" @click="handleEditBtn(scope.row)">编辑</el-button>
       </template>
     </BasicTable>
 
     <el-dialog
-      title="添加角色"
+      title="添加管理员"
       v-model="dialogVisible"
       width="600px"
+      @closed="closed"
       >
       <el-form :model="ruleForm" :rules="rules" ref="refForm" label-width="80px">
+        <el-form-item v-if="!isAdd" label="ID：">
+          <el-input v-model="ruleForm.id" disabled placeholder="请输入角色名"/>
+        </el-form-item>
         <el-form-item label="角色名：" prop="name">
           <el-input v-model="ruleForm.name" placeholder="请输入角色名"/>
         </el-form-item>
@@ -39,17 +44,26 @@
 <script>
 import { useRouter } from 'vue-router'
 import { BasicTable } from '@/components/Table'
-import { getRoleList, postRoleAdd,deleteRole } from '@/api/system/role'
-import { reactive, ref } from 'vue'
+import { getRoleList, postRoleAdd,deleteRole, putRole } from '@/api/system/role'
+import { getUserList } from '@/api/system/user'
+
+import { ElMessageBox } from 'element-plus';
+import { ElMessage } from 'element-plus';
+import { ref } from 'vue'
 export default {
   components: { BasicTable },
   setup(){
     const router = useRouter()
     const dialogVisible = ref(false)
+    const isAdd = ref(true)
     const refForm = ref('')
     const basicTable = ref('')
-    const ruleForm = reactive({
-      name: '',
+    const ruleForm = ref({
+      username: '',
+      nickname: '',
+      roleId: '',
+      avatarId: '',
+      password: '',
       description: ''
     })
     const handleTo = (path) =>{
@@ -60,39 +74,94 @@ export default {
     const handleDetermine = () =>{
       refForm.value.validate(valid =>{
         if (valid) {
-          postRoleAdd(ruleForm).then(res =>{
-            dialogVisible.value = false
-            basicTable.value.handleRefresh()
-          })
-          } else {
-            console.log('error submit!!');
-            return false;
+          if(isAdd.value){
+            postRoleAdd(ruleForm.value).then(res =>{
+              dialogVisible.value = false
+              basicTable.value.handleRefresh()
+            })
+          }else{
+            putRole(ruleForm.value).then(res =>{
+              dialogVisible.value = false
+              basicTable.value.handleRefresh()
+            })
           }
+        } else {
+          return false;
+        }
       })
     }
 
+    //编辑按钮
+    const handleEditBtn = row =>{
+      isAdd.value = false
+      dialogVisible.value = true
+      ruleForm.value ={
+        id: row.id,
+        name: row.name,
+        description: row.description 
+      }
+    }
     //删除
-    const handleDel = (id) => {
-      deleteRole({id}).then(res =>{
-        basicTable.value.handleRefresh()
+    const handleDel = (row) => {
+      ElMessageBox.confirm(`此操作将永久删除 ${row.name}, 是否继续?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        deleteRole({id: row.id}).then(res =>{
+          basicTable.value.handleRefresh()
+        })
+      }).catch(() => {
+        ElMessage({
+          type: 'info',
+          message: '已取消'
+        })
       })
     }
 
+    //关闭弹窗
+    const closed = () =>{
+      ruleForm.value ={
+        name: '',
+        description: '' 
+      }
+      isAdd.value = true
+    }
     return {
       handleTo,
-      getRoleList,
+      getUserList,
       dialogVisible,
       ruleForm,
       refForm,
       basicTable,
+      isAdd,
       handleDel,
       handleDetermine,
+      handleEditBtn,
+      closed,
       columns: [{
         title: '角色名',
-        dataIndex: 'name'
+        dataIndex: 'username'
       },{
-        title: '描述',
-        dataIndex: 'description'
+        title: '昵称',
+        dataIndex: 'nickname'
+      },{
+        title: '头像',
+        dataIndex: 'avatar'
+      },
+      {
+        title: '手机',
+        dataIndex: 'phone'
+      },
+      {
+        title: '性别',
+        dataIndex: 'sex',
+        formatter: ({sex}) => sex == 1? '男': sex == 2? '女':'未知'
+      },
+      {
+        title: '状态',
+        dataIndex: 'status',
+        formatter: ({status}) => status?'启用':'禁用' 
       },
       {
         title: '创建时间',
@@ -103,13 +172,14 @@ export default {
         dataIndex: 'updateTime'
       },{
         title: '操作',
-        width: 180,
+        width: 150,
+        align: 'center',
         slotname: 'operate'
       }],
       tableConfig:{
         index: true,
-        tableName: '角色列表',
-        subName: '角色管理'
+        tableName: '管理员列表',
+        subName: '管理员管理'
       },
       rules: {
         name: [

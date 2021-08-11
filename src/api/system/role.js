@@ -29,5 +29,13 @@ export function deleteRole(params) {
     })
 }
 
+//角色编辑
+export function putRole(data) {
+    return request({
+        url: '/admin/sec/role/edit',
+        method: 'put',
+        data
+    })
+}
 
 
