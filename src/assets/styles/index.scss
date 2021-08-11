@@ -38,3 +38,16 @@
 .hades-table-header th{
     background: #F5F7FA!important;
 }
+
+.table-setting{
+    display: flex;
+    flex-direction: column;
+    .setting-item{
+      display: flex;
+      flex-direction: row;
+      margin-top: 15px;
+      .label{
+          width: 80px;
+      }
+    }
+}

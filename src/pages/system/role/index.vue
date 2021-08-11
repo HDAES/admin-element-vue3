@@ -6,7 +6,7 @@
       :tableConfig="tableConfig"
       :columns="columns" 
       :getData="getRoleList"> 
-      <template  #operate="scope" >
+      <template #operate="scope" >
         <el-button type="text" @click="handleDel(scope.row)">删除</el-button>
         <el-button type="text" @click="handleEditBtn(scope.row)">编辑</el-button>
       </template>
