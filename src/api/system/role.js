@@ -11,6 +11,15 @@ export function getRoleList(params) {
     })
 }
 
+//所有角色
+export function getAllRoleList() {
+    return request({
+        url: '/admin/sec/role/all',
+        method: 'get',
+    })
+}
+
+
 //角色添加 
 export function postRoleAdd(data) {
     return request({
@@ -37,5 +46,4 @@ export function putRole(data) {
         data
     })
 }
-
 

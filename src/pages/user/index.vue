@@ -1,15 +1,20 @@
 <template>
-  <BasicTable :columns="columns" :getData="getRoleList" :tableConfig="tableConfig"/>
+  <BasicTable 
+    :columns="columns" 
+    :getData="getRoleList" 
+    :delData="deleteRole" 
+    :tableConfig="tableConfig"/>
 </template>
 
 <script>
 import { BasicTable } from "@/components/BasicTable";
-import { getRoleList } from "@/api/system/role";
+import { getRoleList,deleteRole } from "@/api/system/role";
 export default {
   components: { BasicTable },
   setup() {
     return {
       getRoleList,
+      deleteRole,
       columns: [
         {
           title: "角色名",
@@ -41,6 +46,3 @@ export default {
   },
 };
 </script>
-
-<style>
-</style>

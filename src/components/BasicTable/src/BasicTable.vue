@@ -3,7 +3,7 @@
     
     <div class="table-header">
       <el-space wrap>
-        <el-button icon="el-icon-plus">新增</el-button>
+        <el-button icon="el-icon-plus" @click="editAdd('add')">新增</el-button>
         <el-button icon="el-icon-edit" :disabled="selectList.length != 1">修改</el-button>
         <el-button icon="el-icon-delete" :disabled="selectList.length == 0" @click="handleDelBtn('multiple')">删除</el-button>
         <el-button icon="el-icon-download">导出</el-button>
@@ -13,22 +13,8 @@
         <el-tooltip effect="dark" content="刷新列表" placement="top-start">
           <el-button icon="el-icon-refresh-right" :loading="loading" @click="handleRefresh"/>
         </el-tooltip>
-        <el-popover placement="bottom-start" :width="200" trigger="click">
-          <template #reference>
-            <el-button icon="el-icon-menu" />
-          </template>
-
-          <draggable v-model="columns" item-key="id">
-            <template #item="{element}" >
-              <div style="line-height:25px"> 
-                <i class="el-icon-rank"/>
-                <el-checkbox v-model="element.show">{{element.title}} </el-checkbox>
-                
-              </div>
-            </template>
-          </draggable>
-          
-        </el-popover>
+        
+        <ColumnSetting v-model:columns="columns" v-model:tableConfig="tableConfig"/>
 
         <el-popover placement="bottom-start" :width="300" trigger="click">
           <template #reference>
@@ -73,7 +59,7 @@
         @selection-change="handleSelectionChange"
         header-row-class-name="hades-table-header">
         <!-- 多选框 -->
-        <el-table-column type="selection" width="55" align="center"></el-table-column>
+        <el-table-column v-if="tableConfig.selection" type="selection" width="55" align="center"/>
          <!-- 序号列 -->
         <el-table-column v-if="tableConfig.index"  type="index" width="100" align="center" :index="1" :label="tableConfig.indexName || '序号'"></el-table-column>
         <!-- 文本 -->
@@ -90,7 +76,7 @@
             >
               <template v-if="!item.formatter" #default="scope">
                 <template v-if="item.slotname">
-                  <el-button type="text">编辑</el-button>
+                  <el-button type="text" @click="editAdd('edit',scope.row)">编辑</el-button>
                   <el-button type="text" style="color:#f00" @click="handleDelBtn('single',scope.row)">删除</el-button>
                   <slot :name="item.slotname" :row="scope.row" />
                 </template>
@@ -117,9 +103,9 @@
 import { ref, reactive, watchEffect, onMounted } from 'vue';
 import { ElMessageBox } from 'element-plus';
 import { ElMessage } from 'element-plus';
-import draggable from 'vuedraggable';
+import ColumnSetting from './ColumnSetting.vue'
 export default {
-  components: { draggable },
+  components: { ColumnSetting },
   props:{
     columns: {
       type: Array,
@@ -128,9 +114,26 @@ export default {
     getData: {
       type: Function
     },
+    delData: {
+      type: Function
+    },
     tableConfig: {
       type: Object
-    }
+    },
+    //编辑或者新增 事件
+    editAdd: {
+      type: Function
+    },
+    //删除时 主键id
+    deleteKey: {
+      type: String,
+      default: 'id'
+    },
+    //删除时 主键name
+    deleteName: {
+      type: String,
+      default: 'name'
+    },
   },
   setup(props){
     const defaultConfig = {
@@ -139,7 +142,8 @@ export default {
       border: false,
       size: 'small',
       showHeader: true,
-      index: true
+      index: true,
+      selection: true
     }
     const tableConfig = reactive({...defaultConfig,...props.tableConfig})
     const table = ref(null)
@@ -177,24 +181,35 @@ export default {
       })
     })
 
+    
+
     //table选状态改变
     const handleSelectionChange = (val) =>{
       selectList.value = val
     }
     //删除按钮点击
     const handleDelBtn = (type, row) =>{
+  
       let title = []
+      let ids = []
       if(type == 'single'){
-        title = row.name
+        title = row[props.deleteName]
+        ids = [row[props.deleteKey]]
       }else if(type == 'multiple'){
-        selectList.value.forEach(item => title.push(item.name))
+        selectList.value.forEach(item => {
+          ids.push(item[props.deleteKey])
+          title.push(item[props.deleteName])
+        })
       }
       ElMessageBox.confirm(`此操作将永久删除 ${title} , 是否继续?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        
+        props.delData({ids: ids.toString()}).then(res =>{
+          table.value.clearSelection();
+          handleRefresh();
+        })
       }).catch(() => {
         ElMessage({
           type: 'info',
@@ -216,7 +231,8 @@ export default {
       pagination,
       handleRefresh,
       handleDelBtn,
-      handleSelectionChange
+      handleSelectionChange,
+      editAdd: props.editAdd
     }
   }
 }
