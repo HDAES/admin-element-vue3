@@ -30,6 +30,16 @@ export const routes = [{
             noCache: false, 
             link: null
         },
+    },{
+        path: 'menu',
+        name: 'Menu',
+        component: "system/menu/index",
+        meta: {
+            title: '权限管理',
+            icon: 'el-icon-phone',
+            noCache: false, 
+            link: null
+        },
     }]
 },{
     path: '/user',

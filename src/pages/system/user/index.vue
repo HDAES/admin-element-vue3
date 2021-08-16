@@ -16,15 +16,15 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="用户名：">
-              <el-input placeholder="请输入用户名"/>
+              <el-input v-model="formData.username" placeholder="请输入用户名"/>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="昵称：">
-              <el-input placeholder="请输入昵称"/>
+              <el-input v-model="formData.nickname" placeholder="请输入昵称"/>
             </el-form-item>
           </el-col>
-          <el-col :span="24">
+          <el-col :span="12">
             <el-form-item label="角色：">
               <el-select multiple  v-model="formData.roleIds" placeholder="请选择角色" style="width:100%">
                 <el-option 
@@ -36,23 +36,36 @@
               </el-select>
             </el-form-item>
           </el-col>
+          <el-col :span="12">
+            <el-form-item label="密码：">
+              <el-input v-model="formData.password" placeholder="请输入密码" show-password/>
+            </el-form-item>
+          </el-col>
         </el-row>
       </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="dialog.visible = false">取 消</el-button>
+          <el-button type="primary" @click="handleSubmit">确 定</el-button>
+        </span>
+      </template>
     </el-dialog>
   </div>
 </template>
 
 <script>
 import { BasicTable } from '@/components/BasicTable'
-import { getUserList } from '@/api/system/user'
+import { getUserList, postUserAdd } from '@/api/system/user'
 import { getAllRoleList } from '@/api/system/role'
 import { ref, reactive, onMounted } from 'vue'
+import Md5 from 'md5'
 export default {
   components: { BasicTable },
   setup(){
     const roleOptions = ref([])
     const formData = ref({
-        roleIds: []
+        roleIds: [],
+        password: ''
     })
     const dialog = reactive({
       visible: false,
@@ -69,14 +82,28 @@ export default {
     const handleEditAdd = (type, row) =>{
       dialog.visible = true
       dialog.type = type
-    }
+      if(type == 'edit'){
 
+      }
+      
+    }
+    //添加
+    const handleSubmit = () =>{
+      if(dialog.type == 'add'){
+        postUserAdd({
+          ...formData.value,password: Md5(formData.value.password)
+        }).then(res =>{
+          console.log(res)
+        })
+      }
+    }
     return {
       dialog,
       formData,
       roleOptions,
       getUserList,
       handleEditAdd,
+      handleSubmit,
       columns: [{
         title: '角色名',
         dataIndex: 'username',

@@ -56,12 +56,14 @@
         v-loading="loading" 
         v-bind="tableConfig" 
         ref="table"
+        row-key="id"
         @selection-change="handleSelectionChange"
+        :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
         header-row-class-name="hades-table-header">
         <!-- 多选框 -->
         <el-table-column v-if="tableConfig.selection" type="selection" width="55" align="center"/>
          <!-- 序号列 -->
-        <el-table-column v-if="tableConfig.index"  type="index" width="100" align="center" :index="1" :label="tableConfig.indexName || '序号'"></el-table-column>
+        <el-table-column v-if="tableConfig.index&&pagination.total>0"  type="index" width="100" align="center" :index="1" :label="tableConfig.indexName || '序号'"></el-table-column>
         <!-- 文本 -->
         <template v-for="(item,index) in columns">
           <el-table-column
@@ -89,12 +91,13 @@
       </el-table>
       <!-- 分页 -->
     <el-pagination 
-        style="margin-top:20px"
-        :background="true"
-        :total="pagination.total" 
-        layout="total,->, sizes, prev, pager, next, jumper"
-        v-model:currentPage="pagination.currentPage" 
-        v-model:pageSize="pagination.pageSize"/>
+      v-if="pagination.total>0"
+      style="margin-top:20px"
+      :background="true"
+      :total="pagination.total" 
+      layout="total,->, sizes, prev, pager, next, jumper"
+      v-model:currentPage="pagination.currentPage" 
+      v-model:pageSize="pagination.pageSize"/>
     </el-card>
   </div>
 </template>
@@ -149,7 +152,7 @@ export default {
     const table = ref(null)
     const selectList = ref([])
     const columns = ref(props.columns)
-    const loading = ref(props.loading)
+    const loading = ref(false)
     const refresh = ref(false)
     const tableData = ref([])
     const tempFormData = reactive({})
@@ -167,10 +170,15 @@ export default {
           size: pagination.pageSize,
           ...tempFormData
       }).then(res =>{
+        if(res instanceof Array){
+          tableData.value = res
+        }else{
           pagination.total = res.total
           pagination.currentPage = res.page
           pagination.pageSize = res.size
           tableData.value = res.list
+        }
+         
           loading.value = false
       })
     })

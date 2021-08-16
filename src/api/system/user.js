@@ -9,3 +9,12 @@ export function getUserList(params) {
         params
     })
 }
+
+//管理员添加
+export function postUserAdd(data) {
+    return request({
+        url: '/admin/sec/user/add',
+        method: 'post',
+        data
+    })
+}
