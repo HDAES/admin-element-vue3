@@ -1,25 +1,45 @@
 <template>
   <div >
     <BasicTable 
-      ref="basicTable"
-      v-model:addVisible="dialogVisible"
-      :tableConfig="tableConfig"
-      :columns="columns" 
-      :getData="getRoleList"> 
-      <template #operate="scope" >
-        <el-button type="text" @click="handleDel(scope.row)">删除</el-button>
-        <el-button type="text" @click="handleEditBtn(scope.row)">编辑</el-button>
+     ref="basicTable"
+     :columns="columns" 
+     :edit-add="handleEditAdd"
+     :getData="getRoleList"
+     :delData="deleteRole"
+     :cellClick="handleCellClick"
+     :tableConfig="tableConfig"
+     :haveSlot="true"
+    >
+    
+      <template v-slot:card>
+        <el-card shadow="never">
+          <template #header>
+            <div class="card-header">
+              <span>菜单分配</span>
+              <el-button class="button" size="mini" :disabled="cellId == ''" type="primary" @click="hanldeSavePermissionIds">保存</el-button>
+            </div>
+          </template>
+
+          <el-tree
+            ref="tree"
+            :data="optionsTree"
+            show-checkbox
+            node-key="id"
+            :props="defaultProps">
+          </el-tree>
+        </el-card>
       </template>
     </BasicTable>
+   
 
     <el-dialog
       title="添加角色"
-      v-model="dialogVisible"
+      v-model="dialog.visible"
       width="600px"
       @closed="closed"
       >
       <el-form :model="ruleForm" :rules="rules" ref="refForm" label-width="80px">
-        <el-form-item v-if="!isAdd" label="ID：">
+        <el-form-item v-if="dialog.type == 'edit'" label="ID：">
           <el-input v-model="ruleForm.id" disabled placeholder="请输入角色名"/>
         </el-form-item>
         <el-form-item label="角色名：" prop="name">
@@ -32,7 +52,7 @@
 
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">取 消</el-button>
+          <el-button @click="dialog.visible = false">取 消</el-button>
           <el-button type="primary" @click="handleDetermine">确 定</el-button>
         </span>
       </template>
@@ -42,40 +62,46 @@
 </template>
 
 <script>
-import { useRouter } from 'vue-router'
-import { BasicTable } from '@/components/Table'
-import { getRoleList, postRoleAdd,deleteRole, putRole } from '@/api/system/role'
-import { ElMessageBox } from 'element-plus';
-import { ElMessage } from 'element-plus';
-import { ref } from 'vue'
+import { BasicTable } from '@/components/BasicTable'
+import { getPermissionTree } from '@/api/system/menu'
+import { getRoleList, postRoleAdd,deleteRole, putRole, putPermission } from '@/api/system/role'
+import { ref,reactive, onMounted } from 'vue'
 export default {
   components: { BasicTable },
   setup(){
-    const router = useRouter()
-    const dialogVisible = ref(false)
-    const isAdd = ref(true)
+    
+    const dialog = reactive({
+      visible: false,
+      type: ''
+    })
+    const optionsTree = ref([])
     const refForm = ref('')
     const basicTable = ref('')
+    const tree = ref('')
+    const cellId = ref('')
     const ruleForm = ref({
       name: '',
       description: ''
     })
-    const handleTo = (path) =>{
-      router.push({path})
-    }
+
+    onMounted(()=>{
+      getPermissionTree().then(res =>{
+        optionsTree.value = res
+      })
+    })
 
     //确定
     const handleDetermine = () =>{
       refForm.value.validate(valid =>{
         if (valid) {
-          if(isAdd.value){
+          if(dialog.type == 'add'){
             postRoleAdd(ruleForm.value).then(res =>{
-              dialogVisible.value = false
+              dialog.visible = false
               basicTable.value.handleRefresh()
             })
           }else{
             putRole(ruleForm.value).then(res =>{
-              dialogVisible.value = false
+              dialog.visible = false
               basicTable.value.handleRefresh()
             })
           }
@@ -85,54 +111,65 @@ export default {
       })
     }
 
-    //编辑按钮
-    const handleEditBtn = row =>{
-      isAdd.value = false
-      dialogVisible.value = true
-      ruleForm.value ={
-        id: row.id,
-        name: row.name,
-        description: row.description 
+
+    //添加编辑回调
+    const handleEditAdd = (type, row) =>{
+      dialog.visible = true
+      dialog.type = type
+      if(type == 'edit'){
+        ruleForm.value = {
+          name: row.name,
+          description: row.description,
+          id: row.id
+        }
       }
     }
-    //删除
-    const handleDel = (row) => {
-      ElMessageBox.confirm(`此操作将永久删除 ${row.name}, 是否继续?`, '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        deleteRole({id: row.id}).then(res =>{
-          basicTable.value.handleRefresh()
-        })
-      }).catch(() => {
-        ElMessage({
-          type: 'info',
-          message: '已取消'
-        })
+
+    //单元格点击
+    const handleCellClick = (e) =>{
+      cellId.value = e.id
+      let temp = []
+      e.permissions.forEach(item =>{
+        temp.push(item.id)
       })
+      tree.value.setCheckedKeys(temp)
     }
 
+    //保存权限
+    const hanldeSavePermissionIds = () =>{
+      putPermission({
+        id: cellId.value,
+        permissionIds: tree.value.getCheckedKeys()
+      }).then(res =>{
+        basicTable.value.handleRefresh()
+      })
+    }
     //关闭弹窗
     const closed = () =>{
       ruleForm.value ={
         name: '',
         description: '' 
       }
-      isAdd.value = true
     }
     return {
-      handleTo,
       getRoleList,
-      dialogVisible,
+      deleteRole,
+      dialog,
       ruleForm,
       refForm,
       basicTable,
-      isAdd,
-      handleDel,
+      optionsTree,
+      tree,
+      cellId,
       handleDetermine,
-      handleEditBtn,
+      handleEditAdd,
+      handleCellClick,
+      hanldeSavePermissionIds,
       closed,
+      defaultProps:{
+        children: 'children',
+        label: 'name'
+      },
       columns: [{
         title: '角色名',
         dataIndex: 'name'
@@ -165,6 +202,9 @@ export default {
         description: [
           { required: true, message: '请输入描述', trigger: 'blur' }
         ]
+      },
+      tableConfig:{
+        name: '角色管理'
       }
     }
   }

@@ -10,3 +10,27 @@ export function getPermissionTree(params) {
         params
     })
 }
+
+//添加权限
+export function postPermissionAdd(data) {
+    return request({
+        url: '/auth/sec/permission/add',
+        method: 'post',
+        data
+    })
+}
+
+//编辑权限
+export function putPermissionEdit(data) {
+    return request({
+        url: '/auth/sec/permission/edit',
+        method: 'put',
+        data
+    })
+}
+export function getPermissionUser() {
+    return request({
+        url: '/admin/sec/permission/user/tree',
+        method: 'get',
+    })
+}

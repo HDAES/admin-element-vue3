@@ -47,3 +47,11 @@ export function putRole(data) {
     })
 }
 
+//为角色设置权限
+export function putPermission(data) {
+    return request({
+        url: '/admin/sec/role/set/permission',
+        method: 'put',
+        data
+    })
+}

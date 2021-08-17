@@ -13,7 +13,7 @@ export const routes = [{
     children:[{
         path: 'role',
         name: 'Role',
-        component: "system/role/index",
+        component: "auth/role/index",
         meta: {
             title: '角色管理',
             icon: 'el-icon-phone',
@@ -23,9 +23,9 @@ export const routes = [{
     },{
         path: 'user',
         name: 'User',
-        component: "system/user/index",
+        component: "auth/user/index",
         meta: {
-            title: '管理员列表',
+            title: '用户管理',
             icon: 'el-icon-phone',
             noCache: false, 
             link: null
@@ -33,7 +33,7 @@ export const routes = [{
     },{
         path: 'menu',
         name: 'Menu',
-        component: "system/menu/index",
+        component: "auth/menu/index",
         meta: {
             title: '权限管理',
             icon: 'el-icon-phone',

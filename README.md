@@ -1,4 +1,4 @@
-# admin-element-vue3
+# auth-element-vue3
 
 ## Project setup
 ```

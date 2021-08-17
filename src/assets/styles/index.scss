@@ -1,4 +1,5 @@
 @import 'element_base.scss';
+@import './transition.scss';
 
 .form-item-sb{
     .el-form-item__content{
@@ -56,4 +57,11 @@
     .el-select-dropdown__item{
         padding: 0;
     }
+}
+
+.card-header{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
 }

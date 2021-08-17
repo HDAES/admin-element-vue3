@@ -27,8 +27,13 @@
                 <el-input v-model="formData.name" placeholder="请输入按钮名称"/>
               </el-form-item>
             </el-col>
+             <el-col :span="12" v-else>
+              <el-form-item label="名称：">
+                <el-input v-model="formData.name" placeholder="请输入名称"/>
+              </el-form-item>
+            </el-col>
             <el-col :span="24">
-              <el-form-item label="菜单图标：">
+              <el-form-item label="菜单图标：" v-if="formData.type != 2">
                 <SelectIcon v-model:icon="formData.icon" />
               </el-form-item>
             </el-col>
@@ -42,7 +47,7 @@
                 <el-input-number v-model="formData.sort" controls-position="right"/>
               </el-form-item>
             </el-col>
-            <el-col :span="12">
+            <el-col :span="12" v-if="formData.type == 2">
               <el-form-item label="路径：">
                 <el-select v-model="formData.method" placeholder="请选择">
                   <el-option label="GET" value="GET"></el-option>
@@ -51,14 +56,19 @@
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col :span="12">
+            <el-col :span="12" >
+              <el-form-item label="主件路径：">
+                 <el-input v-model="formData.path" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12" v-if="formData.type == 2">
               <el-form-item label="请求地址：">
                  <el-input v-model="formData.path" />
               </el-form-item>
             </el-col>
             <el-col :span="24">
               <el-form-item label="上级目录：">
-                <SelectTree :options="options"/>
+                <SelectTree v-model:parentId="formData.parentId" :options="options"/>
               </el-form-item>
             </el-col>
           </el-row>
@@ -78,7 +88,7 @@
 import { BasicTable } from '@/components/BasicTable'
 import { SelectIcon } from '@/components/SelectIcon'
 import { SelectTree } from '@/components/SelectTree'
-import { getPermissionTree } from '@/api/system/menu'
+import { getPermissionTree, postPermissionAdd, putPermissionEdit } from '@/api/system/menu'
 import { reactive, ref } from 'vue'
 export default {
   components: { BasicTable, SelectIcon, SelectTree },
@@ -92,6 +102,7 @@ export default {
       permission: '',
       sort: 0,
       path: '',
+      parentId: '',
       method: 'GET'
     })
 
@@ -105,14 +116,34 @@ export default {
      
       getPermissionTree().then(res =>{
         options.value = res
-        
         dialog.visible = true
         dialog.type = type
+        if(type == 'edit'){
+          formData.value = {
+            name: row.name,
+            path: row.path,
+            component: row.component,
+            type: row.type,
+            permission: row.permission,
+            icon: row.icon,
+            sort: row.sort,
+            parentId: row.parentId,
+            id: row.id
+          }
+        }
       })
     }
 
     const handleDetermine = () =>{
-      console.log(formData.value)
+      
+      if(dialog.type == 'add'){
+        postPermissionAdd(formData.value).then(res =>{
+          console.log(res)
+        })
+      }else{
+        putPermissionEdit(formData.value)
+      }
+      
     }
     return {
       dialog,

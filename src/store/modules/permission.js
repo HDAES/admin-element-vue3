@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { routes } from '@/route/routes'
+import { getPermissionUser } from '@/api/system/menu'
 import Layout from '@/layout'
 export const usePermissionStore = defineStore({
   id: 'permission',
@@ -19,6 +20,11 @@ export const usePermissionStore = defineStore({
     // 生成路由
     GenerateRoutes(){
         return new Promise(resolve => {
+          getPermissionUser().then(res =>{
+            console.log(res)
+          })
+
+
           const sdata = JSON.parse(JSON.stringify(routes))
           const rdata = JSON.parse(JSON.stringify(routes))
 

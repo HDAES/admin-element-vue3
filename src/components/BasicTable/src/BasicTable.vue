@@ -50,55 +50,65 @@
       </el-button-group>
     </div>
     
-    <el-card class="table-card" :header="tableConfig.name" shadow="never" >
-      <el-table 
-        :data="tableData" 
-        v-loading="loading" 
-        v-bind="tableConfig" 
-        ref="table"
-        row-key="id"
-        @selection-change="handleSelectionChange"
-        :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
-        header-row-class-name="hades-table-header">
-        <!-- 多选框 -->
-        <el-table-column v-if="tableConfig.selection" type="selection" width="55" align="center"/>
-         <!-- 序号列 -->
-        <el-table-column v-if="tableConfig.index&&pagination.total>0"  type="index" width="100" align="center" :index="1" :label="tableConfig.indexName || '序号'"></el-table-column>
-        <!-- 文本 -->
-        <template v-for="(item,index) in columns">
-          <el-table-column
-            v-if="item.show"
-            :key="index"
-            :label="item.title"
-            :prop="item.dataIndex"
-            :sortable="item.sortable || false" 
-            :align="item.align || 'left'"
-            :width="item.width"
-            :formatter="item.formatter"
-            >
-              <template v-if="!item.formatter" #default="scope">
-                <template v-if="item.slotname">
-                  <el-button type="text" @click="editAdd('edit',scope.row)">编辑</el-button>
-                  <el-button type="text" style="color:#f00" @click="handleDelBtn('single',scope.row)">删除</el-button>
-                  <slot :name="item.slotname" :row="scope.row" />
+     <el-row :gutter="24" style="margin-top: 15px;">
+        <el-col :span="haveSlot?18:24">
+          <el-card :header="tableConfig.name" shadow="never" >
+            <el-table 
+                :data="tableData" 
+                v-loading="loading" 
+                v-bind="tableConfig" 
+                ref="table"
+                row-key="id"
+                @selection-change="handleSelectionChange"
+                @cell-click="handleCellClick"
+                :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+                header-row-class-name="hades-table-header">
+                <!-- 多选框 -->
+                <el-table-column v-if="tableConfig.selection" type="selection" width="55" align="center"/>
+                <!-- 序号列 -->
+                <el-table-column v-if="tableConfig.index&&pagination.total>0"  type="index" width="100" align="center" :index="1" :label="tableConfig.indexName || '序号'"></el-table-column>
+                <!-- 文本 -->
+                <template v-for="(item,index) in columns">
+                  <el-table-column
+                    v-if="item.show"
+                    :key="index"
+                    :label="item.title"
+                    :prop="item.dataIndex"
+                    :sortable="item.sortable || false" 
+                    :align="item.align || 'left'"
+                    :width="item.width"
+                    :formatter="item.formatter"
+                    >
+                      <template v-if="!item.formatter" #default="scope">
+                        <template v-if="item.slotname">
+                          <el-button type="text" @click="editAdd('edit',scope.row)">编辑</el-button>
+                          <el-button type="text" style="color:#f00" @click="handleDelBtn('single',scope.row)">删除</el-button>
+                          <slot :name="item.slotname" :row="scope.row" />
+                        </template>
+                        <span v-else>
+                            {{ scope.row[item.dataIndex] }}
+                        </span>
+                      </template>
+                    </el-table-column>
                 </template>
-                <span v-else>
-                    {{ scope.row[item.dataIndex] }}
-                </span>
-              </template>
-            </el-table-column>
-        </template>
-      </el-table>
-      <!-- 分页 -->
-    <el-pagination 
-      v-if="pagination.total>0"
-      style="margin-top:20px"
-      :background="true"
-      :total="pagination.total" 
-      layout="total,->, sizes, prev, pager, next, jumper"
-      v-model:currentPage="pagination.currentPage" 
-      v-model:pageSize="pagination.pageSize"/>
-    </el-card>
+              </el-table>
+            <!-- 分页 -->
+            <el-pagination 
+              v-if="pagination.total>0"
+              style="margin-top:20px"
+              :background="true"
+              :total="pagination.total" 
+              layout="total,->, sizes, prev, pager, next, jumper"
+              v-model:currentPage="pagination.currentPage" 
+              v-model:pageSize="pagination.pageSize"/>
+          </el-card>
+        </el-col>
+        <el-col :span="6" v-if="haveSlot">
+          <slot name="card"/>
+        </el-col>
+      </el-row>
+
+    
   </div>
 </template>
 
@@ -137,6 +147,14 @@ export default {
       type: String,
       default: 'name'
     },
+    haveSlot: {
+      type: Boolean,
+      default: false
+    },
+    //单元格点击事件
+    cellClick: {
+      type: Function
+    }
   },
   setup(props){
     const defaultConfig = {
@@ -197,7 +215,6 @@ export default {
     }
     //删除按钮点击
     const handleDelBtn = (type, row) =>{
-  
       let title = []
       let ids = []
       if(type == 'single'){
@@ -229,6 +246,7 @@ export default {
     const handleRefresh = () =>{
       refresh.value = ! refresh.value 
     }
+    
     return {
       table,
       columns,
@@ -240,7 +258,10 @@ export default {
       handleRefresh,
       handleDelBtn,
       handleSelectionChange,
-      editAdd: props.editAdd
+      editAdd: props.editAdd,
+      handleCellClick: props.cellClick,
+      haveSlot: props.haveSlot
+      
     }
   }
 }
@@ -256,9 +277,6 @@ export default {
     justify-content: space-between;
     align-items: center;
     
-  }
-  .table-card{
-    margin-top: 15px;
   }
 }
 </style>

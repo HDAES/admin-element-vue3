@@ -1,15 +1,18 @@
 <template>
   <el-select v-model="statusData" popper-class="select-tree">
-    <el-option :value="statusValueData" style="height: auto">
+    <el-option :value="statusData" :label="statusValueData" style="height: auto">
         <el-tree :data="options" :props="defaultProps" @node-click="handleNodeClick" ></el-tree>
     </el-option>
   </el-select>
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref,onMounted } from 'vue'
 export default {
     props:{
+        parentId: {
+            type: String
+        },
         options: {
             type: Array,
             default: []
@@ -22,17 +25,21 @@ export default {
             }
         }
     },
-    setup(props){
+    setup(props,context){
         
-        const statusData = ref('')
-        const statusValueData = ref('')
-
+        const statusData = ref(props.parentId)
+        const statusValueData = ref(0)
+        
+      
         const handleNodeClick = (data) =>{
-            statusValueData.value = data.id
-            statusData.value = data.name
+            console.log(data.id)
+            statusValueData.value = data.name
+            statusData.value = data.id
+            context.emit('update:parentId', data.id)
         }
         return {
             statusData,
+            statusValueData,
             handleNodeClick,
             defaultProps: props.defaultProps,
             options: props.options
