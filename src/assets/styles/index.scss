@@ -51,3 +51,9 @@
       }
     }
 }
+  /*下拉 树状选择 取消padding*/
+.select-tree{
+    .el-select-dropdown__item{
+        padding: 0;
+    }
+}

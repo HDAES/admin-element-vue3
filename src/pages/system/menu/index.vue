@@ -28,27 +28,71 @@
               </el-form-item>
             </el-col>
             <el-col :span="24">
-              <el-form-item label="菜单图标">
-
+              <el-form-item label="菜单图标：">
+                <SelectIcon v-model:icon="formData.icon" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="权限标识：">
+                <el-input v-model="formData.permission" placeholder="请输入权限标识"/>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="排序：">
+                <el-input-number v-model="formData.sort" controls-position="right"/>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="路径：">
+                <el-select v-model="formData.method" placeholder="请选择">
+                  <el-option label="GET" value="GET"></el-option>
+                  <el-option label="POST" value="POST"></el-option>
+                  <el-option label="PUT" value="PUT"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="请求地址：">
+                 <el-input v-model="formData.path" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="24">
+              <el-form-item label="上级目录：">
+                <SelectTree :options="options"/>
               </el-form-item>
             </el-col>
           </el-row>
         </el-form>
+
+        <template #footer>
+          <span class="dialog-footer">
+            <el-button @click="dialog.visible = false">取 消</el-button>
+            <el-button type="primary" @click="handleDetermine">确 定</el-button>
+          </span>
+        </template>
       </el-dialog>
   </div>
 </template>
 
 <script>
 import { BasicTable } from '@/components/BasicTable'
+import { SelectIcon } from '@/components/SelectIcon'
+import { SelectTree } from '@/components/SelectTree'
 import { getPermissionTree } from '@/api/system/menu'
 import { reactive, ref } from 'vue'
 export default {
-  components: { BasicTable },
+  components: { BasicTable, SelectIcon, SelectTree },
   setup(){
     
+    const options = ref('')
     const formData = ref({
       type: 0,
-      name: ''
+      name: '',
+      icon: '',
+      permission: '',
+      sort: 0,
+      path: '',
+      method: 'GET'
     })
 
     const dialog = reactive({
@@ -58,15 +102,25 @@ export default {
 
     //编辑添加
     const handleEditAdd = (type, row) =>{
-      dialog.visible = true
-      dialog.type = type
+     
+      getPermissionTree().then(res =>{
+        options.value = res
+        
+        dialog.visible = true
+        dialog.type = type
+      })
+    }
 
+    const handleDetermine = () =>{
+      console.log(formData.value)
     }
     return {
       dialog,
       formData,
+      options,
       getPermissionTree,
       handleEditAdd,
+      handleDetermine,
       columns:[{
         title: '权限管理',
         dataIndex: 'name',

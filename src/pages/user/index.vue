@@ -1,16 +1,18 @@
 <template>
-  <BasicTable 
+  <SelectTree />
+  <!-- <BasicTable 
     :columns="columns" 
     :getData="getRoleList" 
     :delData="deleteRole" 
-    :tableConfig="tableConfig"/>
+    :tableConfig="tableConfig"/> -->
 </template>
 
 <script>
 import { BasicTable } from "@/components/BasicTable";
+import { SelectTree } from '@/components/SelectTree'
 import { getRoleList,deleteRole } from "@/api/system/role";
 export default {
-  components: { BasicTable },
+  components: { BasicTable, SelectTree },
   setup() {
     return {
       getRoleList,
