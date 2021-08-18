@@ -68,10 +68,8 @@
                 <!-- 序号列 -->
                 <el-table-column v-if="tableConfig.index&&pagination.total>0"  type="index" width="100" align="center" :index="1" :label="tableConfig.indexName || '序号'"></el-table-column>
                 <!-- 文本 -->
-                <template v-for="(item,index) in columns">
+                <template v-for="(item,index) in columns" :key="index">
                   <el-table-column
-                    v-if="item.show"
-                    :key="index"
                     :label="item.title"
                     :prop="item.dataIndex"
                     :sortable="item.sortable || false" 
