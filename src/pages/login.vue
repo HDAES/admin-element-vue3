@@ -54,8 +54,7 @@ export default {
       ruleForm.value.validate((valid) => {
         if (valid) {
           userStore.login(form).then(res =>{
-            console.log('12323')
-            router.push({ path:"/system/user" })
+            router.push({ path: "/index" })
           }).catch(error  =>{
             getVerifyCode()
             form.code = ''

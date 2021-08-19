@@ -10,7 +10,7 @@ export default {
   setup(){
     const router = useRouter()
     const handleTo = () =>{
-      router.push({path: '/system/user'})
+      router.push({path: '/'})
     }
 
     return {

@@ -13,7 +13,7 @@ router.beforeEach((to, from, next) =>{
     NProgress.start()
     if(getToken()){
         if (to.path === '/login') {
-            next({ path: '/system' })
+            next({ path: '/' })
             NProgress.done()
         }else{
             const userStore = useUserStore()
@@ -26,7 +26,7 @@ router.beforeEach((to, from, next) =>{
                                 router.addRoute(item)
                             })
                            
-                            console.log(router.getRoutes())
+                            //console.log(router.getRoutes())
                             next({ ...to, replace: true })
                         })
                     })

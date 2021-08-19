@@ -34,3 +34,13 @@ export function getPermissionUser() {
         method: 'get',
     })
 }
+
+//删除权限
+export function deletePermission(params) {
+    return request({
+        url: '/admin/sec/permission/del',
+        method: 'DELETE',
+        params
+    })
+}
+

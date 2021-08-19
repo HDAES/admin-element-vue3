@@ -21,29 +21,39 @@ export const usePermissionStore = defineStore({
     GenerateRoutes(){
         return new Promise(resolve => {
           getPermissionUser().then(res =>{
-            console.log(res)
+            const sdata = JSON.parse(JSON.stringify(res))
+            const rdata = JSON.parse(JSON.stringify(res))
+
+            const myRoutes = filterAsyncRouter(sdata, false, true)
+            const sidebarRoutes = filterAsyncRouter(rdata)
+            
+            this.setSidebarRouters(sidebarRoutes)
+
+            resolve(myRoutes)
           })
 
 
-          const sdata = JSON.parse(JSON.stringify(routes))
-          const rdata = JSON.parse(JSON.stringify(routes))
+          // const sdata = JSON.parse(JSON.stringify(routes))
+          // const rdata = JSON.parse(JSON.stringify(routes))
 
-          const myRoutes = filterAsyncRouter(sdata, false, true)
-          const sidebarRoutes = filterAsyncRouter(rdata)
-          console.log(sidebarRoutes)
-          this.setSidebarRouters(sidebarRoutes)
-          resolve(myRoutes)
+          // const myRoutes = filterAsyncRouter(sdata, false, true)
+          // const sidebarRoutes = filterAsyncRouter(rdata)
+          
+          // this.setSidebarRouters(sidebarRoutes)
+
+          // resolve(myRoutes)
         })
     }
   }
 })
 
+
 // 遍历后台传来的路由字符串，转换为组件对象
 function filterAsyncRouter(asyncRouterMap, lastRouter = false, type = false) {
     return asyncRouterMap.filter(route => {
-        if (type && route.children) {
-          route.children = filterChildren(route.children)
-        }
+        // if (type && route.children ) {
+        //   route.children = filterChildren(route.children)
+        // }
         if (route.component) {
             // Layout ParentView 组件特殊处理
             if (route.component === 'Layout') {
@@ -56,7 +66,7 @@ function filterAsyncRouter(asyncRouterMap, lastRouter = false, type = false) {
             }
         }
 
-        if (route.children != null && route.children && route.children.length) {
+        if (route.children != null && route.children && route.children.length &&  route.type == 0) {
             route.children = filterAsyncRouter(route.children, route, type)
         }else {
             delete route['children']
@@ -75,7 +85,7 @@ function filterChildren(childrenMap, lastRouter = false) {
         if (el.component === 'ParentView') {
           el.children.forEach(c => {
             c.path = el.path + '/' + c.path
-            if (c.children && c.children.length) {
+            if (c.children && c.children.length && c.type == 2) {
               children = children.concat(filterChildren(c.children, c))
               return
             }

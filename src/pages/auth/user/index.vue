@@ -14,6 +14,7 @@
       title="添加"
       v-model="dialog.visible"
       width="600px"
+      @closed="closed"
       >
       <el-form label-width="80px">
         <el-row>
@@ -68,8 +69,10 @@ export default {
     const table = ref(null)
     const roleOptions = ref([])
     const formData = ref({
-        roleIds: [],
-        password: ''
+      username: '',
+      nickname: '',
+      roleIds: [],
+      password: ''
     })
     const dialog = reactive({
       visible: false,
@@ -87,7 +90,11 @@ export default {
       dialog.visible = true
       dialog.type = type
       if(type == 'edit'){
-
+        formData.value = {
+          username: row.username,
+          nickname: row.nickname,
+          
+        }
       }
       
     }
@@ -102,6 +109,16 @@ export default {
         })
       }
     }
+
+    //关闭弹窗
+    const closed = () =>{
+      formData.value = {
+        username: '',
+        nickname: '',
+        roleIds: [],
+        password: ''
+      }
+    }
     return {
       table,
       dialog,
@@ -109,6 +126,7 @@ export default {
       roleOptions,
       getUserList,
       deleteUser,
+      closed,
       handleEditAdd,
       handleSubmit,
       columns: [{

@@ -4,6 +4,7 @@
       ref="table"
      :columns="columns" 
      :getData="getPermissionTree"
+     :delData="deletePermission"
      :tableConfig="tableConfig"
      :edit-add="handleEditAdd"
     />
@@ -59,18 +60,23 @@
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col :span="12" >
-              <el-form-item label="主件路径：">
-                 <el-input v-model="formData.path" />
-              </el-form-item>
-            </el-col>
             <el-col :span="12" v-if="formData.type == 2">
               <el-form-item label="请求地址：">
-                 <el-input v-model="formData.path" />
+                 <el-input v-model="formData.path" placeholder="接口请求地址"/>
+              </el-form-item>
+            </el-col>
+             <el-col :span="12" v-else>
+              <el-form-item label="路由地址：">
+                 <el-input v-model="formData.path" placeholder="请输入路由地址"/>
+              </el-form-item>
+            </el-col>
+             <el-col :span="12" v-if="formData.type == 1">
+              <el-form-item label="组件地址：">
+                 <el-input v-model="formData.component" placeholder="请输入组件地址"/>
               </el-form-item>
             </el-col>
             <el-col :span="24">
-              <el-form-item label="上级目录：">
+              <el-form-item label="上级目录：" v-if="formData.type != 0">
                 <SelectTree v-model:parentId="formData.parentId" :options="options"/>
               </el-form-item>
             </el-col>
@@ -91,7 +97,7 @@
 import { BasicTable } from '@/components/BasicTable'
 import { SelectIcon } from '@/components/SelectIcon'
 import { SelectTree } from '@/components/SelectTree'
-import { getPermissionTree, postPermissionAdd, putPermissionEdit } from '@/api/system/menu'
+import { getPermissionTree, postPermissionAdd, putPermissionEdit,deletePermission } from '@/api/system/menu'
 import { reactive, ref } from 'vue'
 export default {
   components: { BasicTable, SelectIcon, SelectTree },
@@ -106,7 +112,7 @@ export default {
       sort: 0,
       path: '',
       parentId: '',
-      method: 'GET'
+      method: ''
     })
 
     const dialog = reactive({
@@ -140,6 +146,11 @@ export default {
     const handleDetermine = () =>{
       
       if(dialog.type == 'add'){
+        if(formData.value.type == 0){
+          formData.value.parentId = 0
+          formData.value.component = 'Layout'
+        }
+
         postPermissionAdd(formData.value).then(res =>{
           dialog.visible = false
           table.value.handleRefresh()
@@ -160,6 +171,7 @@ export default {
       getPermissionTree,
       handleEditAdd,
       handleDetermine,
+      deletePermission,
       columns:[{
         title: '权限管理',
         dataIndex: 'name',
@@ -184,7 +196,7 @@ export default {
       },{
         title: '类型',
         dataIndex: 'type',
-        formatter: ({type}) => type == 1? '页面': '按钮'
+        formatter: ({type}) => type == 0?'目录':( type == 1?'页面': '按钮') 
       },{
         title: '操作',
         width: 150,

@@ -7,6 +7,7 @@
     <el-space alignment="center" size="large">
       <SelectLang />
       <Screenfull />
+      <LogoutOutlined class="icon" @click="loginOut"/>
     </el-space>
   </div> 
 </template>
@@ -15,13 +16,20 @@
 import { useAppSetting } from '@/hooks/setting/useAppSetting'
 import SelectLang from '@/components/SelectLang'
 import Screenfull from '@/components/Screenfull'
-import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons-vue'
+import { useUserStore } from '@/store/modules/user'
+import { MenuUnfoldOutlined, MenuFoldOutlined,LogoutOutlined } from '@ant-design/icons-vue'
 export default {
-  components: { SelectLang, MenuUnfoldOutlined, MenuFoldOutlined, Screenfull },
+  components: { SelectLang, MenuUnfoldOutlined, MenuFoldOutlined, Screenfull,LogoutOutlined },
   setup(){
-   const { changeCollapse,isCollapse } = useAppSetting()
-
+    const { changeCollapse,isCollapse } = useAppSetting()
+    const userStore = useUserStore()
+    const loginOut = () =>{
+      userStore.loginOut().then(() => {
+        location.href = '/index';
+      })
+    }
     return {
+      loginOut,
       changeCollapse,
       isCollapse
     }

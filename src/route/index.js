@@ -1,10 +1,10 @@
-import { createRouter,createWebHashHistory} from "vue-router";
-import layout from '@/layout'
+import { createRouter,createWebHistory} from "vue-router";
+import Layout from '@/layout'
 
 const routes = [
     {
         path: '/redirect',
-        component: layout,
+        component: Layout,
         children: [
             {
               path: ':pathMatch(.*)*',
@@ -13,30 +13,32 @@ const routes = [
         ]
     },
     {
-        path: "",
-        component: layout,
-        redirect: 'home',
-        children:[
-            {
-                path: 'home',
-                component: () => import('@/pages/home')
-            }
-        ]
-        
-    },{
         path: "/login",
         name: "Login",
         component: () => import('@/pages/login')
     },
-    // { 
-    //     path: '/:pathMatch(.*)*', 
-    //     name: 'NotFound', 
-    //     component: ()=>import('@/pages/notFound') 
-    // },
+    {
+        path: '/index',
+        component: Layout,
+        redirect: 'index',
+        children: [
+          {
+            path: 'index',
+            component: (resolve) => require(['@/pages/index'], resolve),
+            name: 'Index',
+            meta: { title: '首页', icon: 'dashboard', affix: true }
+          }
+        ]
+    },
+    { 
+        path: '/:pathMatch(.*)*', 
+        name: 'NotFound', 
+        component: ()=>import('@/pages/notFound') 
+    },
 ]
 
 
 export const router = createRouter({
-    history: createWebHashHistory(),
+    history: createWebHistory(),
     routes: routes
 })
