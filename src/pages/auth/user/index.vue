@@ -1,9 +1,12 @@
 <template>
   <div >
     <BasicTable 
+      ref="table"
      :columns="columns" 
      :getData="getUserList"
+     :delData="deleteUser"
      :edit-add="handleEditAdd"
+     :tableConfig="tableConfig"
      deleteName="username"
     />
 
@@ -55,13 +58,14 @@
 
 <script>
 import { BasicTable } from '@/components/BasicTable'
-import { getUserList, postUserAdd } from '@/api/system/user'
+import { getUserList, postUserAdd, deleteUser } from '@/api/system/user'
 import { getAllRoleList } from '@/api/system/role'
 import { ref, reactive, onMounted } from 'vue'
 import Md5 from 'md5'
 export default {
   components: { BasicTable },
   setup(){
+    const table = ref(null)
     const roleOptions = ref([])
     const formData = ref({
         roleIds: [],
@@ -93,15 +97,18 @@ export default {
         postUserAdd({
           ...formData.value,password: Md5(formData.value.password)
         }).then(res =>{
-          console.log(res)
+          dialog.visible = false
+          table.value.handleRefresh()
         })
       }
     }
     return {
+      table,
       dialog,
       formData,
       roleOptions,
       getUserList,
+      deleteUser,
       handleEditAdd,
       handleSubmit,
       columns: [{
@@ -140,7 +147,10 @@ export default {
         width: 150,
         align: 'center',
         slotname: 'operate'
-      }]
+      }],
+      tableConfig: {
+        name: '管理员管理'
+      }
     }
   }
 }

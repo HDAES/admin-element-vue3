@@ -1,8 +1,10 @@
 <template>
   <div>
-     <BasicTable 
+    <BasicTable 
+      ref="table"
      :columns="columns" 
      :getData="getPermissionTree"
+     :tableConfig="tableConfig"
      :edit-add="handleEditAdd"
     />
 
@@ -53,6 +55,7 @@
                   <el-option label="GET" value="GET"></el-option>
                   <el-option label="POST" value="POST"></el-option>
                   <el-option label="PUT" value="PUT"></el-option>
+                  <el-option label="DELETE" value="DELETE"></el-option>
                 </el-select>
               </el-form-item>
             </el-col>
@@ -93,7 +96,7 @@ import { reactive, ref } from 'vue'
 export default {
   components: { BasicTable, SelectIcon, SelectTree },
   setup(){
-    
+    const table = ref(null)
     const options = ref('')
     const formData = ref({
       type: 0,
@@ -138,14 +141,19 @@ export default {
       
       if(dialog.type == 'add'){
         postPermissionAdd(formData.value).then(res =>{
-          console.log(res)
+          dialog.visible = false
+          table.value.handleRefresh()
         })
       }else{
-        putPermissionEdit(formData.value)
+        putPermissionEdit(formData.value).then(res =>{
+          dialog.visible = false
+          table.value.handleRefresh()
+        })
       }
       
     }
     return {
+      table,
       dialog,
       formData,
       options,
@@ -182,7 +190,10 @@ export default {
         width: 150,
         align: 'center',
         slotname: 'operate'
-      }]
+      }],
+      tableConfig: {
+        name: '菜单管理'
+      }
     }
   }
 }

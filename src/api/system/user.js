@@ -18,3 +18,12 @@ export function postUserAdd(data) {
         data
     })
 }
+
+//管理员删除
+export function deleteUser(params) {
+    return request({
+        url: '/admin/sec/user',
+        method: 'delete',
+        params
+    })
+}

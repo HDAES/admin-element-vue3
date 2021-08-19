@@ -39,6 +39,9 @@
 .hades-table-header th{
     background: #F5F7FA!important;
 }
+.el-table__header{
+    width: 100%;
+}
 
 .table-setting{
     display: flex;
@@ -65,3 +68,4 @@
     justify-content: space-between;
     align-items: center;
 }
+
