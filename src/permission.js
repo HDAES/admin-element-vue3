@@ -1,10 +1,9 @@
-import {router} from './route'
+import {router, routes} from './route'
 import { getToken } from '@/utils/auth'
 import { usePermissionStore } from '@/store/modules/permission'
 import { useUserStore } from '@/store/modules/user'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
-import layout from '@/layout'
 NProgress.configure({ showSpinner: false })
 
 const whiteList = ['/login']
@@ -22,12 +21,10 @@ router.beforeEach((to, from, next) =>{
                     const permissionStore = usePermissionStore()
                     userStore.GetInfo().then(res =>{
                         permissionStore.GenerateRoutes().then(accessRoutes =>{
-                            accessRoutes.forEach(item =>{
-                                router.addRoute(item)
+                            accessRoutes.forEach(route =>{
+                                router.addRoute(route)
+                                next({ ...to, replace: true })
                             })
-                           
-                            //console.log(router.getRoutes())
-                            next({ ...to, replace: true })
                         })
                     })
                 }catch (error) {
@@ -37,8 +34,6 @@ router.beforeEach((to, from, next) =>{
             }else{
                 next()
             }
-            
-            
         }
     }else{
         if (whiteList.indexOf(to.path) !== -1) {
