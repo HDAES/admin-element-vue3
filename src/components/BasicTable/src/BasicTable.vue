@@ -81,13 +81,14 @@
                   >
                     <template v-if="!item.formatter" #default="scope">
                       <template v-if="item.slotname">
-                        <el-button type="text" @click="editAdd('edit',scope.row)">编辑</el-button>
-                        <el-button type="text" style="color:#f00" @click="handleDelBtn('single',scope.row)">删除</el-button>
-                        <slot :name="item.slotname" :row="scope.row" />
+                        <template v-if="item.slotname == 'operate'">
+                          <el-button type="text" @click="editAdd('edit',scope.row)">编辑</el-button>
+                          <slot :name="item.slotname" :row="scope.row" />
+                          <el-button type="text" style="color:#f00" @click="handleDelBtn('single',scope.row)">删除</el-button>
+                        </template>
+                        <slot v-else :name="item.slotname" :row="scope.row" />
                       </template>
-                      <span v-else>
-                          {{ scope.row[item.dataIndex] }}
-                      </span>
+                      <span v-else>{{scope.row[item.dataIndex] }}</span>
                     </template>
                   </el-table-column>
               </template>

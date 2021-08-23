@@ -8,7 +8,21 @@
      :edit-add="handleEditAdd"
      :tableConfig="tableConfig"
      deleteName="username"
-    />
+    >
+      <template #status="scope">
+        <el-switch 
+          v-model="scope.row.status" 
+          :active-value="1" 
+          :inactive-value="0" 
+          active-color="#13ce66" 
+          inactive-color="#ff4949"
+          @change="switchChange(scope.row)"
+          />
+      </template>
+      <template #operate="scope">
+        <el-button @click="handleChangePassWord(scope.row)" type="text">改密</el-button>
+      </template>
+    </BasicTable>
 
     <el-dialog
       title="添加"
@@ -18,6 +32,11 @@
       >
       <el-form label-width="80px">
         <el-row>
+          <el-col v-if="dialog.type == 'edit'" :span="12">
+            <el-form-item label="ID：">
+              <el-input v-model="formData.id" disabled placeholder="请输入用户名"/>
+            </el-form-item>
+          </el-col>
           <el-col :span="12">
             <el-form-item label="用户名：">
               <el-input v-model="formData.username" placeholder="请输入用户名"/>
@@ -40,7 +59,7 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="12" v-if="dialog.type == 'add'">
             <el-form-item label="密码：">
               <el-input v-model="formData.password" placeholder="请输入密码" show-password/>
             </el-form-item>
@@ -59,9 +78,11 @@
 
 <script>
 import { BasicTable } from '@/components/BasicTable'
-import { getUserList, postUserAdd, deleteUser } from '@/api/system/user'
+import { getUserList, postUserAdd, deleteUser, putUser,putUserStatus } from '@/api/system/user'
 import { getAllRoleList } from '@/api/system/role'
 import { ref, reactive, onMounted } from 'vue'
+import { ElMessageBox } from 'element-plus';
+import { ElMessage } from 'element-plus';
 import Md5 from 'md5'
 export default {
   components: { BasicTable },
@@ -90,10 +111,13 @@ export default {
       dialog.visible = true
       dialog.type = type
       if(type == 'edit'){
+        let roleIds = []
+        row.roles.forEach(item =>roleIds.push(item.id))
         formData.value = {
+          id: row.id,
           username: row.username,
           nickname: row.nickname,
-          
+          roleIds,
         }
       }
       
@@ -107,9 +131,31 @@ export default {
           dialog.visible = false
           table.value.handleRefresh()
         })
+      }else{
+        putUser(formData.value)
       }
     }
-
+    const switchChange = (e) =>{
+      if(e.id!=null){
+        putUserStatus({secUserId:e.id,status: e.status})
+      }
+    }
+    //修改密码
+    const handleChangePassWord = row =>{
+      ElMessageBox.prompt('请输入密码', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+      }).then(({ value }) => {
+         putUser({id: row.id,password: Md5(value)}).then(res =>{
+          console.log(res)
+        })
+      }).catch(() => {
+        ElMessage({
+          type: 'info',
+          message: '取消输入',
+        })
+      })
+    }
     //关闭弹窗
     const closed = () =>{
       formData.value = {
@@ -129,6 +175,8 @@ export default {
       closed,
       handleEditAdd,
       handleSubmit,
+      handleChangePassWord,
+      switchChange,
       columns: [{
         title: '角色名',
         dataIndex: 'username',
@@ -150,8 +198,7 @@ export default {
       },
       {
         title: '状态',
-        dataIndex: 'status',
-        formatter: ({status}) => status?'启用':'禁用' 
+        slotname: 'status'
       },
       {
         title: '创建时间',

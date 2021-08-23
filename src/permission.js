@@ -25,6 +25,13 @@ router.beforeEach((to, from, next) =>{
                                 router.addRoute(route)
                                 next({ ...to, replace: true })
                             })
+
+                            router.addRoute({ 
+                                path: '/:pathMatch(.*)*', 
+                                name: 'NotFound', 
+                                component: ()=>import('@/pages/notFound') 
+                            })
+                            
                         })
                     })
                 }catch (error) {

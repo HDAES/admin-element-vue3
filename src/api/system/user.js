@@ -27,3 +27,21 @@ export function deleteUser(params) {
         params
     })
 }
+
+//管理员编辑
+export function putUser(data) {
+    return request({
+        url: '/admin/sec/user/edit',
+        method: 'put',
+        data
+    })
+}
+
+//禁用或启用管理员
+export function putUserStatus(data) {
+    return request({
+        url: '/admin/sec/user/status',
+        method: 'put',
+        data
+    })
+}
