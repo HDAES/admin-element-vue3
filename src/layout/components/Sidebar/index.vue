@@ -13,6 +13,7 @@
         :key="index"
         :path="item.path"
         :route="item"
+        :havecChildren="item.children&&item.children.length>0"
       />
     </el-menu>
   </el-scrollbar>
@@ -25,9 +26,6 @@ export default {
   components: { MenuItem },
   setup() {
     const { isCollapse, sidebarRouters } = useAppSetting();
-
-   
-
     return {
       isCollapse,
       sidebarRouters,

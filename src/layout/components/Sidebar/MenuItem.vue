@@ -10,9 +10,10 @@
         :key="index"
         :route="item"
         :path="route.path"
+        :havecChildren="havecChildren"
         />
     </el-submenu>
-    <el-menu-item :index="path+ '/' +route.path" v-else>
+    <el-menu-item :index="(havecChildren?path:'') + '/' +route.path" v-else>
       <template #title>
         {{ route.meta.title }}
       </template>
@@ -21,7 +22,6 @@
 </template>
 
 <script>
-import { ref } from "vue";
 export default {
 name: "MenuItem",
   props: {
@@ -30,18 +30,17 @@ name: "MenuItem",
     },
     path:{
         type: String,
+    },
+    havecChildren: {
+      type: Boolean
     }
   },
   setup(props) {
-    const route = ref(props.route);
-    const path = ref(props.path)
     return {
-      route,
-      path
+      route: props.route,
+      path: props.path,
+      havecChildren: props.havecChildren
     };
   },
 };
 </script>
-
-<style>
-</style>

@@ -1,4 +1,4 @@
-import {router, routes} from './route'
+import {router} from './route'
 import { getToken } from '@/utils/auth'
 import { usePermissionStore } from '@/store/modules/permission'
 import { useUserStore } from '@/store/modules/user'
@@ -23,15 +23,13 @@ router.beforeEach((to, from, next) =>{
                         permissionStore.GenerateRoutes().then(accessRoutes =>{
                             accessRoutes.forEach(route =>{
                                 router.addRoute(route)
-                                next({ ...to, replace: true })
                             })
-
+                            next({ ...to, replace: true })
                             router.addRoute({ 
                                 path: '/:pathMatch(.*)*', 
                                 name: 'NotFound', 
                                 component: ()=>import('@/pages/notFound') 
                             })
-                            
                         })
                     })
                 }catch (error) {

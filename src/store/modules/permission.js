@@ -15,7 +15,12 @@ export const usePermissionStore = defineStore({
   },
   actions: {
     setSidebarRouters(sidebarRouters) {
-      this.sidebarRouters = sidebarRouters
+      // 顶部导航菜单默认添加统计报表栏指向首页
+      const index = [{
+        path: 'index',
+        meta: { title: '首页', icon: 'dashboard'}
+      }]
+      this.sidebarRouters = [...index,...sidebarRouters]
     },
     // 生成路由
     GenerateRoutes(){
