@@ -13,6 +13,7 @@
       title="编辑菜单"
       width="600px"
       v-model="dialog.visible"
+      @close="handleColse"
       >
         <el-form label-width="110px">
           <el-row>
@@ -122,7 +123,6 @@ export default {
 
     //编辑添加
     const handleEditAdd = (type, row) =>{
-     
       getPermissionTree().then(res =>{
         options.value = res
         dialog.visible = true
@@ -131,6 +131,7 @@ export default {
           formData.value = {
             name: row.name,
             path: row.path,
+            method: row.method,
             component: row.component,
             type: row.type,
             permission: row.permission,
@@ -144,7 +145,6 @@ export default {
     }
 
     const handleDetermine = () =>{
-      
       if(dialog.type == 'add'){
         if(formData.value.type == 0){
           formData.value.parentId = 0
@@ -161,13 +161,27 @@ export default {
           table.value.handleRefresh()
         })
       }
-      
+    }
+
+    //弹窗关闭
+    const handleColse = () =>{
+      formData.value = {
+        type: 0,
+        name: '',
+        icon: '',
+        permission: '',
+        sort: 0,
+        path: '',
+        parentId: '',
+        method: ''
+      }
     }
     return {
       table,
       dialog,
       formData,
       options,
+      handleColse,
       getPermissionTree,
       handleEditAdd,
       handleDetermine,

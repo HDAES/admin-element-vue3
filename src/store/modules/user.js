@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { putUserLogin, getUserInfo } from '@/api/system/login'
 import { setToken as setAuthToken, getToken, removeToken } from '@/utils/auth'
-
+import md5 from 'md5'
 export const useUserStore = defineStore({
   id: 'user',
   state: () =>({
@@ -18,7 +18,7 @@ export const useUserStore = defineStore({
     },
     async login(data){
       return new Promise((resolve, reject) =>{
-        putUserLogin(data).then(res =>{
+        putUserLogin({...data,password: md5(data.password)}).then(res =>{
           setAuthToken(res.authorizationType + ' ' +res.authorization)
           this.setToken(res.authorizationType + ' ' +res.authorization)
           resolve()

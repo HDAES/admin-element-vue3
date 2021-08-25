@@ -25,7 +25,7 @@
     </BasicTable>
 
     <el-dialog
-      title="添加"
+      :title="dialog.type== 'edit'?'编辑':'添加'"
       v-model="dialog.visible"
       width="600px"
       @closed="closed"
@@ -132,7 +132,10 @@ export default {
           table.value.handleRefresh()
         })
       }else{
-        putUser(formData.value)
+        putUser(formData.value).then( res =>{
+          dialog.visible = false
+          table.value.handleRefresh()
+        })
       }
     }
     const switchChange = (e) =>{

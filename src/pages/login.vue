@@ -10,7 +10,7 @@
           <el-input v-model="form.password" type="password" prefix-icon="el-icon-lock" autocomplete="off" :placeholder="$t('login_page.pass_word_placeholder')"/>
         </el-form-item>
         <el-form-item prop="code" class="code-item">
-          <el-input v-model="form.code"  prefix-icon="el-icon-key" autocomplete="off" :placeholder="$t('login_page.verify_placeholder')"/>
+          <el-input v-model="form.code" @keyup.enter="submitForm"  prefix-icon="el-icon-key" autocomplete="off" :placeholder="$t('login_page.verify_placeholder')"/>
           <img style="width:100px;margin-left:20px" :src="verifyImageBase64" alt="code" @click="getVerify">
         </el-form-item>
         <el-form-item class="form-item-sb">
