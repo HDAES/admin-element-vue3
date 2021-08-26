@@ -1,11 +1,11 @@
 <template>
-  <el-scrollbar style="background-color: #324157">
+  <el-scrollbar style="background-color: #001529">
     <el-menu
       class="sidebar-el-menu"
       :collapse="isCollapse"
-      background-color="#324157"
-      text-color="#bfcbd9"
-      active-text-color="#20a0ff"
+      background-color="#001529"
+      text-color="#ccc"
+      active-text-color="#fff"
       :router="true"
     >
       <MenuItem

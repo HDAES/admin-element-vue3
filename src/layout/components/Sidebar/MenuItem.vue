@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div >
     <el-submenu :index="route.path" v-if="route.children && route.children.length > 0">
       <template  #title>
         <i :class="route.meta.icon"></i>
@@ -14,6 +14,7 @@
         />
     </el-submenu>
     <el-menu-item :index="(havecChildren?path:'') + '/' +route.path" v-else>
+      <i :class="route.meta.icon"></i>
       <template #title>
         {{ route.meta.title }}
       </template>

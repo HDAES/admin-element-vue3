@@ -1,6 +1,6 @@
 <template>
-    <FullscreenOutlined v-if="isFullscreen" class="icon" @click="handleClick"/>
-    <FullscreenExitOutlined v-else class="icon" @click="handleClick"/>
+    <FullscreenExitOutlined v-if="isFullscreen" class="icon" @click="handleClick"/>
+    <FullscreenOutlined v-else class="icon" @click="handleClick"/>
 </template>
 
 <script>

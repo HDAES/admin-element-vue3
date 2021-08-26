@@ -7,13 +7,18 @@
     </router-view>
   </el-scrollbar>
 </template>
-
 <script>
+import { watchEffect } from 'vue'
+import { useRoute } from 'vue-router'
+import { useAppSetting } from '@/hooks/setting/useAppSetting'
 export default {
-  computed: {
-    key() {
-      return this.$route.path
-    }
+  setup(){
+    const route =  useRoute()
+    const { addViews } = useAppSetting()
+    
+    watchEffect(() =>{
+      addViews(route)
+    })
   }
 }
 </script>

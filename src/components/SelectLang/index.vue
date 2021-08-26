@@ -1,6 +1,6 @@
 <template>
     <el-dropdown>
-        <TranslationOutlined style="color:#fff;font-size:24px"/>
+        <TranslationOutlined style="color:#333;font-size:16px"/>
         <template #dropdown>
             <el-dropdown-menu>
                 <el-dropdown-item @click="change('zh')">简体中文</el-dropdown-item>

@@ -69,3 +69,24 @@
     align-items: center;
 }
 
+
+.sidebar-el-menu{
+    .is-active{
+        background-color: #0960BD!important;
+    }
+    .is-opened{
+        .el-menu-item{
+            background-color: #0C2135!important;
+        }
+        .is-active{
+            background-color: #0960BD!important;
+        }
+    }
+    .el-menu-item:hover,.el-submenu__title:hover{
+        color: #fff!important;
+        i{
+            color: #bbb!important;
+        }
+    }
+   
+}

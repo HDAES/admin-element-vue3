@@ -1,9 +1,7 @@
 <template>
   <div class="header">
-
     <MenuUnfoldOutlined v-if="isCollapse" class="icon" @click="changeCollapse"/>
     <MenuFoldOutlined v-else class="icon" @click="changeCollapse"/>
- 
     <el-space alignment="center" size="large">
       <SelectLang />
       <Screenfull />
@@ -45,8 +43,8 @@ export default {
   align-items: center;
   height: 100%;
   .icon{
-    color: #fff;
-    font-size: 24px;
+    color: #333;
+    font-size: 16px;
   }
 }
 </style>

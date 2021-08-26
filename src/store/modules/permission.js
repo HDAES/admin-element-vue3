@@ -1,11 +1,9 @@
 import { defineStore } from 'pinia'
-import { routes } from '@/route/routes'
 import { getPermissionUser } from '@/api/system/menu'
 import Layout from '@/layout'
 export const usePermissionStore = defineStore({
   id: 'permission',
   state: () =>({
-    routes,
     sidebarRouters: []
   }),
   getters: {
@@ -18,7 +16,7 @@ export const usePermissionStore = defineStore({
       // 顶部导航菜单默认添加统计报表栏指向首页
       const index = [{
         path: 'index',
-        meta: { title: '首页', icon: 'dashboard'}
+        meta: { title: '首页', icon: 'el-icon-s-home'}
       }]
       this.sidebarRouters = [...index,...sidebarRouters]
     },
@@ -36,17 +34,6 @@ export const usePermissionStore = defineStore({
 
             resolve(myRoutes)
           })
-
-
-          // const sdata = JSON.parse(JSON.stringify(routes))
-          // const rdata = JSON.parse(JSON.stringify(routes))
-
-          // const myRoutes = filterAsyncRouter(sdata, false, true)
-          // const sidebarRoutes = filterAsyncRouter(rdata)
-          
-          // this.setSidebarRouters(sidebarRoutes)
-
-          // resolve(myRoutes)
         })
     }
   }
