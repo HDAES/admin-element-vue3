@@ -20,7 +20,3 @@ export default {
   components: { SideBar, Header, AppMain, TagsView }
 }
 </script>
-
-<style>
-
-</style>

@@ -17,6 +17,7 @@ export default {
     const { addViews } = useAppSetting()
     
     watchEffect(() =>{
+      console.log(route.path)
       addViews(route)
     })
   }
