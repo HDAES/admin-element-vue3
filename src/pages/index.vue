@@ -1,17 +1,9 @@
 <template>
-  <h1 style="height:2000px">1312</h1>
+  <div>12312</div>
 </template>
 
-<script>
-export default {
-  name: 'Index',
-  setup(){
-    
-  }
-
+<style scoped>
+.chart {
+  height: 400px;
 }
-</script>
-
-<style>
-
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <el-scrollbar style="background-color: #F0F2F5">
+  <el-scrollbar style="background-color: #F0F2F5;padding: 16px">
     <router-view v-slot="{ Component }">
       <transition name="fade-transform" mode="out-in">
         <component :is="Component" />

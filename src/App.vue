@@ -2,6 +2,8 @@
   <router-view />
 </template>
 
+
+
 <style lang="scss">
 html,body,#app{
   margin: 0;

@@ -24,5 +24,19 @@ module.exports = {
             })
         ]
     },
-    
+    chainWebpack: config =>{
+        config.plugins.delete('preload') 
+        config.plugins.delete('prefetch') 
+        config.module
+            .rule('svg')
+            .test(/\.svg$/)
+            .include.add(path.resolve(__dirname,'src/assets/svg'))
+            .end()
+            .use('svg-sprite-loader')
+            .loader('svg-sprite-loader')
+            .options({
+                symbolId: 'icon-[name]'
+            })
+            .end()
+    }
 }
