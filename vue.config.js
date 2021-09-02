@@ -1,6 +1,10 @@
 'use strict'
 const webpack = require('webpack')
 const path = require('path')
+
+function resolve(dir) {
+    return path.join(__dirname, dir);
+}
 module.exports = {
     publicPath: '/',
     // 在npm run build 或 yarn build 时 ，生成文件的目录名称（要和baseUrl的生产环境路径一致）（默认dist）
@@ -26,17 +30,20 @@ module.exports = {
     },
     chainWebpack: config =>{
         config.plugins.delete('preload') 
-        config.plugins.delete('prefetch') 
+        config.plugins.delete('prefetch')
+        
+        config.module.rules.delete("svg"); //重点:删除默认配置中处理svg,
         config.module
-            .rule('svg')
+            .rule('svg-sprite-loader')
             .test(/\.svg$/)
-            .include.add(path.resolve(__dirname,'src/assets/svg'))
+            .include
+            .add(resolve('src/assets/svg')) //处理svg目录
+            .add(resolve('src/assets/icons')) 
             .end()
             .use('svg-sprite-loader')
             .loader('svg-sprite-loader')
             .options({
                 symbolId: 'icon-[name]'
             })
-            .end()
     }
 }

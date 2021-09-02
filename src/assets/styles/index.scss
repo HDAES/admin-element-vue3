@@ -18,7 +18,6 @@
     }
 }
 
-
 .el-menu{
     border-right: none!important;
 }
@@ -62,12 +61,7 @@
     }
 }
 
-.card-header{
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-}
+
 
 
 .sidebar-el-menu{
@@ -89,4 +83,25 @@
         }
     }
    
+}
+
+// 全局card 样式
+.hades-card {
+    .el-card__header{
+        min-height: 36px;
+        padding: 0 12px;
+        .card-header{
+            display: flex;
+            min-height: 36px;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            .title{
+                font-size: 14px;
+            }
+        }
+    }
+}
+.el-card.is-always-shadow {
+    box-shadow: none;
 }

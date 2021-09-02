@@ -10,9 +10,6 @@ import './permission'
 
 const app = createApp(App)
 
-const req = require.context('@/assets/svg', false, /\.svg$/)
-req.keys().map(req)
-
 app.component('svg-icon', SvgIcon)
 
 app.use(Element)

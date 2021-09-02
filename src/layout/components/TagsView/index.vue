@@ -116,8 +116,8 @@ export default {
 <style lang="scss" scoped>
 .tags-views-container{
     position: relative;
-    height: 40px;
-    line-height: 40px;
+    height: 28px;
+    line-height: 28px;
     padding: 0 10px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.12),0 0 6px rgba(0,0,0,0.04);
     .tags{

@@ -2,7 +2,7 @@
   <el-container style="height:100%">
     <SideBar/>
     <el-container>
-      <el-header>
+      <el-header style="height: 48px">
         <Header/>
       </el-header>
       <TagsView/>
