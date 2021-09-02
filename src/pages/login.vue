@@ -40,7 +40,7 @@ export default {
     const verifyImageBase64 = ref('')
     const ruleForm = ref()
     const form = reactive({
-      username: 'admin',
+      username: 'hades',
       password: '123456',
       code: '',
       verify: '',

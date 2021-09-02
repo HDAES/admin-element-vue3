@@ -44,9 +44,14 @@ service.interceptors.response.use(response =>{
             return response.data
         }
         
-    }else if(code == 201 || code == 403){
+    }else if(code == 201){
         ElMessage.error(response.data.message || '未知错误')
         return Promise.reject(new Error(response.data.message))
+    }else if(code == 403){
+        ElMessage.error(response.data.message || '未知错误')
+        useUserStore().loginOut().then(res =>{
+            location.href = '/login';
+        })
     }else if(code == 4014){
         ElMessage.error(response.data.message || '未知错误')
         return Promise.reject(new Error(response.data.message))

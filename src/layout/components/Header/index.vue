@@ -5,13 +5,26 @@
     <el-space alignment="center" size="large">
       <SelectLang />
       <Screenfull />
-      <LogoutOutlined class="icon" @click="loginOut"/>
+
+      <el-dropdown @command="handleCommand">
+        <span class="el-dropdown-link">
+          {{userName}} {{roles.toString()}}
+        </span>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item command="loginOut" icon="el-icon-switch-button">
+              退出系统
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+        </el-dropdown>
     </el-space>
   </div> 
 </template>
 
 <script>
 import { useAppSetting } from '@/hooks/setting/useAppSetting'
+import { useUser } from '@/hooks/user'
 import SelectLang from '@/components/SelectLang'
 import Screenfull from '@/components/Screenfull'
 import { useUserStore } from '@/store/modules/user'
@@ -21,15 +34,28 @@ export default {
   setup(){
     const { changeCollapse,isCollapse } = useAppSetting()
     const userStore = useUserStore()
+    const { userName, roles } = useUser()
     const loginOut = () =>{
       userStore.loginOut().then(() => {
         location.href = '/index';
       })
     }
+
+    const handleCommand = (command) =>{
+      switch(command){
+        case 'loginOut' :
+          loginOut()
+          break
+        default : 
+          console.log('click')
+      }
+    }
     return {
-      loginOut,
       changeCollapse,
-      isCollapse
+      handleCommand,
+      isCollapse,
+      userName,
+      roles
     }
   }
 }

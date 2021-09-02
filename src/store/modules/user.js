@@ -7,8 +7,17 @@ export const useUserStore = defineStore({
   state: () =>({
     token: getToken(),
     roles: [],
-    permissions: []
+    permissions: [],
+    username: ''
   }),
+  getters: {
+    getUserName(){
+      return this.username
+    },
+    getRoles(){
+      return this.roles
+    }
+  },
   actions: {
     setToken(token) {
       this.token = token
@@ -31,9 +40,9 @@ export const useUserStore = defineStore({
     GetInfo(){
       return new Promise((resolve, reject) => {
         getUserInfo().then(res =>{
-          console.log(res)
+          this.username = res.username
+          this.setRoles(res.roles)
         })
-        this.setRoles(['admin'])
         resolve(true)
       })
     },
@@ -47,6 +56,5 @@ export const useUserStore = defineStore({
         reject(error)
       })
     }
-
   }
 })
