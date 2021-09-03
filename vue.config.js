@@ -2,9 +2,7 @@
 const webpack = require('webpack')
 const path = require('path')
 
-function resolve(dir) {
-    return path.join(__dirname, dir);
-}
+
 module.exports = {
     publicPath: '/',
     // 在npm run build 或 yarn build 时 ，生成文件的目录名称（要和baseUrl的生产环境路径一致）（默认dist）
@@ -18,27 +16,27 @@ module.exports = {
     configureWebpack: {
         resolve: {
             alias: {
-              '@': path.join(__dirname, 'src') 
+                '@': path.join(__dirname, 'src')
             }
         },
         plugins: [
             new webpack.DefinePlugin({
                 __VUE_OPTIONS_API__: JSON.stringify(true),
-                __INTLIFY_PROD_DEVTOOLS__ : 'false'
+                __INTLIFY_PROD_DEVTOOLS__: 'false'
             })
         ]
     },
-    chainWebpack: config =>{
-        config.plugins.delete('preload') 
+    chainWebpack: config => {
+        config.plugins.delete('preload')
         config.plugins.delete('prefetch')
-        
+
         config.module.rules.delete("svg"); //重点:删除默认配置中处理svg,
         config.module
             .rule('svg-sprite-loader')
             .test(/\.svg$/)
             .include
-            .add(resolve('src/assets/svg')) //处理svg目录
-            .add(resolve('src/assets/icons')) 
+            .add(path.join(__dirname, 'src/assets/svg')) //处理svg目录
+            .add(path.join(__dirname, 'src/assets/icons'))
             .end()
             .use('svg-sprite-loader')
             .loader('svg-sprite-loader')

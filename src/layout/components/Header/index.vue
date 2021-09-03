@@ -8,6 +8,7 @@
 
       <el-dropdown @command="handleCommand">
         <span class="el-dropdown-link">
+          <img class="avatar"  src="@/assets/images/avatar.jpg" alt="avatar">
           {{userName}} {{roles.toString()}}
         </span>
         <template #dropdown>
@@ -71,6 +72,17 @@ export default {
   .icon{
     color: #333;
     font-size: 16px;
+  }
+  .el-dropdown-link{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    .avatar{
+      width: 30px;
+      height: 30px;
+      margin-right: 10px;
+      border-radius: 50%;
+    }
   }
 }
 </style>
