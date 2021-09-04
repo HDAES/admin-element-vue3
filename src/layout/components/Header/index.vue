@@ -9,7 +9,7 @@
       <el-dropdown @command="handleCommand">
         <span class="el-dropdown-link">
           <img class="avatar"  src="@/assets/images/avatar.jpg" alt="avatar">
-          {{userName}} {{roles.toString()}}
+          <span> {{userName}} {{roles.toString()}}</span>
         </span>
         <template #dropdown>
           <el-dropdown-menu>
@@ -29,6 +29,7 @@ import { useUser } from '@/hooks/user'
 import SelectLang from '@/components/SelectLang'
 import Screenfull from '@/components/Screenfull'
 import { useUserStore } from '@/store/modules/user'
+import { firstLetterToUpperCase } from "@/utils/utils";
 import { MenuUnfoldOutlined, MenuFoldOutlined,LogoutOutlined } from '@ant-design/icons-vue'
 export default {
   components: { SelectLang, MenuUnfoldOutlined, MenuFoldOutlined, Screenfull,LogoutOutlined },
@@ -55,7 +56,7 @@ export default {
       changeCollapse,
       handleCommand,
       isCollapse,
-      userName,
+      userName: firstLetterToUpperCase(userName.value),
       roles
     }
   }

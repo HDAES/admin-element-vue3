@@ -17,19 +17,6 @@ export const routes = [
         name: "Login",
         component: () => import('@/pages/login')
     },
-    {
-        path: '',
-        component: Layout,
-        redirect: 'index',
-        children: [
-          {
-            path: 'index',
-            component: () => import('@/pages/index'),
-            name: 'Index',
-            meta: { title: '首页', icon: 'dashboard', affix: true }
-          }
-        ]
-    },
     // { 
     //     path: '/:pathMatch(.*)*', 
     //     name: 'NotFound', 
