@@ -301,27 +301,14 @@ export default {
     const handleExport = () =>{
       exportLoading.value = true
       let options = []
-
       exportColumns.value.forEach(item =>{
         if(item.show){
           options.push(item)
         }
       })
 
-      if(pagination.pageSize>=exportConfig.exprotNum){
-        let data = JSON.parse(JSON.stringify(tableData.value))
-        data.map(item =>{
-          for(let key  in exportColunmsFun){
-            if(key in item){
-              item[key] = exportColunmsFun[key](item)
-            }
-          }
-        })
-        ExportJsonExcel(options,data,exportConfig.name)
-        exportLoading.value = false
-        dialogExeclVisible.value = false
-      }else{
-        props.getData({
+      //请求数据
+      props.getData({
           page: 1,
           size: exportConfig.exprotNum,
           ...tempFormData
@@ -337,8 +324,6 @@ export default {
           exportLoading.value = false
           dialogExeclVisible.value = false
         })
-
-      }
     }
     return {
       table,
