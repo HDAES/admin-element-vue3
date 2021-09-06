@@ -6,7 +6,7 @@
         <el-button icon="el-icon-plus" @click="editAdd('add')">新增</el-button>
         <el-button icon="el-icon-edit" :disabled="selectList.length != 1">修改</el-button>
         <el-button icon="el-icon-delete" :disabled="selectList.length == 0" @click="handleDelBtn('multiple')">删除</el-button>
-        <el-button icon="el-icon-download">导出</el-button>
+        <el-button icon="el-icon-download" @click="dialogExeclVisible = true" :loading="exportLoading">导出</el-button>
       </el-space>
       <el-button-group>
         <el-button icon="el-icon-search"></el-button>
@@ -50,7 +50,7 @@
       </el-button-group>
     </div>
     
-     <el-row :gutter="24" style="margin-top: 15px;">
+    <el-row :gutter="24" style="margin-top: 15px;">
         <el-col :span="haveSlot?18:24">
           <el-card :header="tableConfig.name" shadow="never" >
             <el-table 
@@ -107,9 +107,41 @@
         <el-col :span="6" v-if="haveSlot">
           <slot name="card"/>
         </el-col>
-      </el-row>
+    </el-row>
 
-    
+
+    <!-- 导出弹窗 -->
+    <el-dialog
+      title="导出表格"
+      width="760px"
+      v-model="dialogExeclVisible"
+      >
+        <el-row>
+          <el-col :span="12">
+             <draggable v-model="exportColumns" item-key="id" >
+                <template #item="{element}" >
+                    <div class="item" style="line-height:25px"> 
+                        <i class="el-icon-rank" style="margin-right:10px"/>
+                        <el-checkbox v-model="element.show">{{element.title}}</el-checkbox>
+                    </div>
+                </template>
+            </draggable>
+          </el-col>
+          <el-col :span="12">
+              <el-form label-width="100px">
+                <el-form-item label="文件名：">
+                  <el-input v-model="exportConfig.name" placeholder="请输入文件名"/>
+                </el-form-item>
+                <el-form-item label="导出条数：">
+                  <el-input v-model="exportConfig.exprotNum" :max="pagination.total" placeholder="请输入文件名"/>
+                </el-form-item>
+                <el-form-item >
+                  <el-button type="primary" @click="handleExport">导出</el-button>
+                </el-form-item>
+              </el-form>
+          </el-col>
+        </el-row>
+      </el-dialog>
   </div>
 </template>
 
@@ -117,9 +149,11 @@
 import { ref, reactive, watchEffect, onMounted } from 'vue';
 import { ElMessageBox } from 'element-plus';
 import { ElMessage } from 'element-plus';
-import ColumnSetting from './ColumnSetting.vue'
+import ColumnSetting from './ColumnSetting.vue';
+import draggable from 'vuedraggable';
+import ExportJsonExcel from '@/utils/exportExecl';
 export default {
-  components: { ColumnSetting },
+  components: { ColumnSetting, draggable },
   props:{
     columns: {
       type: Array,
@@ -173,6 +207,13 @@ export default {
     const columns = ref(props.columns)
     const loading = ref(false)
     const refresh = ref(false)
+    const dialogExeclVisible = ref(false) //导出
+    const exportColumns = ref([]) //导出列
+    const exportLoading = ref(false) //导出等待
+    const exportConfig = reactive({
+      name: props.tableConfig.name,
+      exprotNum: 10
+    })
     const tableData = ref([])
     const tempFormData = reactive({})
     const pagination = reactive({
@@ -184,6 +225,7 @@ export default {
     watchEffect(() =>{
       loading.value = true
       refresh.value 
+      
       props.getData({
           page: pagination.currentPage,
           size: pagination.pageSize,
@@ -197,15 +239,17 @@ export default {
           pagination.pageSize = res.size
           tableData.value = res.list
         }
-         
           loading.value = false
       })
     })
 
     onMounted(() =>{
+      let tempColumns =[]
       columns.value.forEach(item =>{
         item.show = true
+        tempColumns.push(item)
       })
+      exportColumns.value = tempColumns
     })
 
 
@@ -247,6 +291,54 @@ export default {
       refresh.value = ! refresh.value 
     }
     
+
+    //导出按钮
+    const handleExport = () =>{
+      exportLoading.value = true
+      let options = []
+      let obj = {}
+    
+      exportColumns.value.forEach(item =>{
+        if(item.show){
+          options.push(item)
+        }
+        if(item.formatter){
+          obj[item.dataIndex] = item.formatter
+        }
+      })
+
+      if(pagination.pageSize>=exportConfig.exprotNum){
+        let data = JSON.parse(JSON.stringify(tableData.value))
+        data.map(item =>{
+          for(let key  in obj){
+            if(key in item){
+              item[key] = obj[key](item)
+            }
+          }
+        })
+        ExportJsonExcel(options,data,exportConfig.name)
+        exportLoading.value = false
+        dialogExeclVisible.value = false
+      }else{
+        props.getData({
+          page: 1,
+          size: exportConfig.exprotNum,
+          ...tempFormData
+        }).then(res =>{
+          res.map(item =>{
+            for(let key  in obj){
+              if(key in item){
+                item[key] = obj[key](item)
+              }
+            }
+          })
+          ExportJsonExcel(options,data,exportConfig.name)
+          exportLoading.value = false
+          dialogExeclVisible.value = false
+        })
+
+      }
+    }
     return {
       table,
       columns,
@@ -257,7 +349,12 @@ export default {
       pagination,
       handleRefresh,
       handleDelBtn,
+      exportColumns,
+      exportConfig,
+      handleExport,
+      exportLoading,
       handleSelectionChange,
+      dialogExeclVisible,
       editAdd: props.editAdd,
       handleCellClick: props.cellClick,
       haveSlot: props.haveSlot

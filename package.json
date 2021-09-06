@@ -14,6 +14,7 @@
     "core-js": "^3.6.5",
     "echarts": "^5.2.0",
     "element-plus": "^1.0.2-beta.54",
+    "js-export-excel": "^1.1.4",
     "md5": "^2.3.0",
     "nprogress": "^0.2.0",
     "pinia": "^2.0.0-beta.5",
