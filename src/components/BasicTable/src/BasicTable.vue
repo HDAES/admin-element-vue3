@@ -214,6 +214,7 @@ export default {
       name: props.tableConfig.name,
       exprotNum: 10
     })
+    const exportColunmsFun = reactive({})
     const tableData = ref([])
     const tempFormData = reactive({})
     const pagination = reactive({
@@ -245,11 +246,15 @@ export default {
 
     onMounted(() =>{
       let tempColumns =[]
+      let colunmsFun = {}
       columns.value.forEach(item =>{
         item.show = true
         tempColumns.push(item)
+        if(item.formatter){
+          exportColunmsFun[item.dataIndex] = item.formatter
+        }
       })
-      exportColumns.value = tempColumns
+      exportColumns.value = JSON.parse(JSON.stringify(tempColumns))
     })
 
 
@@ -296,23 +301,19 @@ export default {
     const handleExport = () =>{
       exportLoading.value = true
       let options = []
-      let obj = {}
-    
+
       exportColumns.value.forEach(item =>{
         if(item.show){
           options.push(item)
-        }
-        if(item.formatter){
-          obj[item.dataIndex] = item.formatter
         }
       })
 
       if(pagination.pageSize>=exportConfig.exprotNum){
         let data = JSON.parse(JSON.stringify(tableData.value))
         data.map(item =>{
-          for(let key  in obj){
+          for(let key  in exportColunmsFun){
             if(key in item){
-              item[key] = obj[key](item)
+              item[key] = exportColunmsFun[key](item)
             }
           }
         })
@@ -326,9 +327,9 @@ export default {
           ...tempFormData
         }).then(res =>{
           res.map(item =>{
-            for(let key  in obj){
+            for(let key  in exportColunmsFun){
               if(key in item){
-                item[key] = obj[key](item)
+                item[key] = exportColunmsFun[key](item)
               }
             }
           })
