@@ -49,9 +49,9 @@ service.interceptors.response.use(response =>{
         return Promise.reject(new Error(response.data.message))
     }else if(code == 403){
         ElMessage.error(response.data.message || '未知错误')
-        useUserStore().loginOut().then(res =>{
-            location.href = '/login';
-        })
+        // useUserStore().loginOut().then(res =>{
+        //     location.href = '/login';
+        // })
     }else if(code == 4014){
         ElMessage.error(response.data.message || '未知错误')
         return Promise.reject(new Error(response.data.message))
@@ -63,12 +63,15 @@ service.interceptors.response.use(response =>{
     }else if(code == 404){
         ElMessage.error(response.data.message || '未知错误')
         return Promise.reject(new Error(response.data.message))
+    }else if(code == 500){
+        ElMessage.error(response.data.message || '未知错误')
+        return Promise.reject(new Error(response.data.message))
     }else if(code == 5003){
         ElMessage.error(response.data.message || '未知错误')
 
-        useUserStore().loginOut().then(res =>{
-            location.href = '/login';
-        })
+        // useUserStore().loginOut().then(res =>{
+        //     location.href = '/login';
+        // })
     }
 },error => {
     let { message } = error;

@@ -44,5 +44,5 @@ export default [
     'el-icon-s-grid',
     'el-icon-menu',
     'el-icon-share',
-
+    'el-icon-data-analysis'
 ]
