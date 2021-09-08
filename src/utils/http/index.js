@@ -36,42 +36,24 @@ service.interceptors.request.use(config => {
 service.interceptors.response.use(response =>{
     const code = response.data.code;
 
-    if(code == 200){
-        if(response.data.data){
-            return response.data.data
+    if(code == 5002 || code == 5003){
+        ElMessage.error(response.data.message || '未知错误')
+        useUserStore().loginOut().then(res =>{
+            location.href = '/login';
+        })
+    }else{
+        if(code == 200){
+            if(response.data.data){
+                return response.data.data
+            }else{
+                ElMessage.success(response.data.message || '操作成功')
+                return response.data
+            }
+            
         }else{
-            ElMessage.success(response.data.message || '操作成功')
-            return response.data
+            ElMessage.error(response.data.message || '未知错误')
+            return Promise.reject(new Error(response.data.message))
         }
-        
-    }else if(code == 201){
-        ElMessage.error(response.data.message || '未知错误')
-        return Promise.reject(new Error(response.data.message))
-    }else if(code == 403){
-        ElMessage.error(response.data.message || '未知错误')
-        // useUserStore().loginOut().then(res =>{
-        //     location.href = '/login';
-        // })
-    }else if(code == 4014){
-        ElMessage.error(response.data.message || '未知错误')
-        return Promise.reject(new Error(response.data.message))
-    }else if(code == 401){
-        ElMessage.error(response.data.message || '未知错误')
-        // useUserStore().loginOut().then(res =>{
-        //     location.href = '/login';
-        // })
-    }else if(code == 404){
-        ElMessage.error(response.data.message || '未知错误')
-        return Promise.reject(new Error(response.data.message))
-    }else if(code == 500){
-        ElMessage.error(response.data.message || '未知错误')
-        return Promise.reject(new Error(response.data.message))
-    }else if(code == 5003){
-        ElMessage.error(response.data.message || '未知错误')
-
-        // useUserStore().loginOut().then(res =>{
-        //     location.href = '/login';
-        // })
     }
 },error => {
     let { message } = error;

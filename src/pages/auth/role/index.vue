@@ -25,7 +25,10 @@
             :data="optionsTree"
             show-checkbox
             node-key="id"
-            :props="defaultProps">
+            check-strictly
+            :props="defaultProps"
+            empty-text="加载中,请稍等"
+            >
           </el-tree>
         </el-card>
       </template>

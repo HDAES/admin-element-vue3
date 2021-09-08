@@ -1,9 +1,8 @@
 <template>
   <div class="basic-table">
-    
     <div class="table-header">
       <el-space wrap>
-        <el-button icon="el-icon-plus" @click="editAdd('add')">新增</el-button>
+        <el-button icon="el-icon-plus" :disabled="(typeof editAdd) == 'undefined'" @click="editAdd('add')">新增</el-button>
         <el-button icon="el-icon-edit" :disabled="selectList.length != 1">修改</el-button>
         <el-button icon="el-icon-delete" :disabled="selectList.length == 0" @click="handleDelBtn('multiple')">删除</el-button>
         <el-button icon="el-icon-download" @click="dialogExeclVisible = true" :loading="exportLoading">导出</el-button>
@@ -82,9 +81,9 @@
                     <template v-if="!item.formatter" #default="scope">
                       <template v-if="item.slotname">
                         <template v-if="item.slotname == 'operate'">
-                          <el-button type="text" @click="editAdd('edit',scope.row)">编辑</el-button>
+                          <el-button v-if="!customOperate" type="text" @click="editAdd('edit',scope.row)">编辑</el-button>
                           <slot :name="item.slotname" :row="scope.row" />
-                          <el-button type="text" style="color:#f00" @click="handleDelBtn('single',scope.row)">删除</el-button>
+                          <el-button v-if="!customOperate" type="text" style="color:#f00" @click="handleDelBtn('single',scope.row)">删除</el-button>
                         </template>
                         <slot v-else :name="item.slotname" :row="scope.row" />
                       </template>
@@ -170,7 +169,7 @@ export default {
     },
     //编辑或者新增 事件
     editAdd: {
-      type: Function
+      type: Function,
     },
     //删除时 主键id
     deleteKey: {
@@ -189,6 +188,11 @@ export default {
     //单元格点击事件
     cellClick: {
       type: Function
+    },
+    //自定义操作
+    customOperate:{
+      type: Boolean,
+      default: false
     }
   },
   setup(props){
