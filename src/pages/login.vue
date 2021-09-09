@@ -40,14 +40,12 @@ export default {
     const verifyImageBase64 = ref('')
     const ruleForm = ref()
     const form = reactive({
-      username: 'hades',
-      password: '123456',
+      username: process.env.NODE_ENV == "development"?'hades': '',
+      password: process.env.NODE_ENV == "development"?'123456': '',
       code: '',
       verify: '',
       rememberMe: true
     })
-
-
     onMounted( () =>getVerify())
 
     const submitForm = () =>{
