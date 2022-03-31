@@ -26,6 +26,7 @@ export default {
   components: { MenuItem },
   setup() {
     const { isCollapse, sidebarRouters } = useAppSetting();
+   
     return {
       isCollapse,
       sidebarRouters,
